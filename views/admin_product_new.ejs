@@ -1,0 +1,297 @@
+<%- include ('partials/top') %>
+
+  <div class="fade-up d1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+    <div>
+      <h1 class="font-display text-2xl md:text-3xl text-white font-bold">New Product</h1>
+      <p class="text-forest-400 text-sm mt-0.5">Create a new product to add to the store.</p>
+    </div>
+  </div>
+
+
+ <form id="newProductForm" onsubmit="submitForm(event)" novalidate>
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+          <!-- ════ LEFT COLUMN (forms) ════ -->
+          <div class="xl:col-span-2 space-y-5">
+
+            <!-- ── SECTION 1: Basic Info ── -->
+            <div class="fade-up d2 glass section-card" id="section-basic">
+              <div class="flex items-center gap-3 mb-5">
+                <div class="w-8 h-8 bg-harvest-400/15 rounded-xl flex items-center justify-center shrink-0">
+                  <svg class="w-4 h-4 text-harvest-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </div>
+                <div>
+                  <h2 class="font-display text-base text-white font-bold">Basic Information</h2>
+                  <p class="text-forest-500 text-xs">Core product identity and details</p>
+                </div>
+              </div>
+
+              <!-- Product Name -->
+              <div class="mb-4">
+                <label class="form-label">Product Name <span class="req">*</span></label>
+                <input type="text" id="productName" placeholder="e.g. Apple" class="form-input" required maxlength="100"/>
+                <div class="char-counter" id="nameCount">0 / 100</div>
+              </div>
+
+              <!-- Category + Sub-category -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label class="form-label">Category <span class="req">*</span></label>
+                  <select id="productCategory" class="form-input" required >
+                    <option value="" disabled selected>Select category</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="form-label">Sub-category</label>
+                  <input type="text" id="productSubCategory" placeholder="e.g. Root Crops" class="form-input"/>
+                </div>
+
+                <div>
+                  <label class="form-label">Product SKU</label>
+                  <input type="text" id="productSKU" placeholder="VEGFR-001" class="form-input" />
+                </div>
+              </div>
+
+              <!-- Description with toolbar -->
+              <div class="mb-4">
+                <label class="form-label">Product Description <span class="req">*</span></label>
+                <div class="rich-toolbar">
+                  <button type="button" data-command="bold" title="Bold"><b>B</b></button>
+                  <button type="button" data-command="italic" title="Italic"><i>I</i></button>
+                  <button type="button" data-command="underline" title="Underline"><u>U</u></button>
+                </div>
+                <div class="rich-editor" id="productDescription" contenteditable="true" data-placeholder="Describe the product's freshness, origin, nutritional value, packaging, storage instructions…" ></div>
+                <div class="char-counter" id="descCount">0 characters</div>
+              </div>
+            </div>
+
+            <!-- ── SECTION 2: Media / Images ── -->
+            <div class="fade-up d3 glass section-card" id="section-media">
+              <div class="flex items-center gap-3 mb-5">
+                <div class="w-8 h-8 bg-forest-400/15 rounded-xl flex items-center justify-center shrink-0">
+                  <svg class="w-4 h-4 text-forest-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </div>
+                <div>
+                  <h2 class="font-display text-base text-white font-bold">Product Images</h2>
+                  <p class="text-forest-500 text-xs">Upload up to 8 images. First image is the cover.</p>
+                </div>
+              </div>
+
+              <!-- Main preview -->
+              <div class="upload-main" id="uploadArea" >
+                <div id="uploadPlaceholder" class="flex flex-col items-center gap-3 py-6 px-4 text-center pointer-events-none">
+                  <div class="w-16 h-16 bg-forest-800/60 rounded-2xl flex items-center justify-center">
+                    <svg class="w-8 h-8 text-forest-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  </div>
+                  <div>
+                    <p class="text-forest-300 text-sm font-semibold">Drop images here or <span class="text-harvest-400">click to browse</span></p>
+                    <p class="text-forest-600 text-xs mt-1">PNG, JPG, WEBP · Max 5MB each · Up to 8 images</p>
+                  </div>
+                </div>
+                <img id="mainPreviewImg" class="hidden w-full h-60 object-cover rounded-2xl" alt="Main preview"/>
+              </div>
+
+              <!-- Thumbnail grid -->
+              <div class="thumb-grid flex flex-wrap gap-1" id="previewContainer"></div>
+              <input type="file" id="fileInput" accept="image/*" multiple class="hidden" />
+            </div>
+
+
+
+
+
+            <!-- ── SECTION 3: Pricing and Inventory ── -->
+            <div class="fade-up d3 glass section-card" id="section-pricing">
+              <div class="flex justify-between mb-5">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 bg-harvest-600/15 rounded-xl flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4 text-harvest-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  </div>
+                  <div>
+                    <h2 class="font-display text-base text-white font-bold">Pricing</h2>
+                    <p class="text-forest-500 text-xs">Set regular and sale prices</p>
+                  </div>
+                </div>
+
+                <div>
+                  <button type="button" id="addNewVariantBtn" class="px-3 w-full bg-forest-700/60 hover:bg-forest-600/60 border border-forest-600/40 text-forest-200 font-semibold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" 
+                          viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M12 5v14"></path>
+                          <path d="M5 12h14"></path>
+                      </svg>
+                      Variant
+                  </button>
+                </div>
+              </div>
+
+              <div id="variantContainer" >
+                <div class="variantSet mb-3 border-b border-forest-600">
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                    <div>
+                      <label class="form-label">Variant Name<span class="req">*</span></label>
+                      <input type="text" placeholder="e.g. Small" class="variantName form-input" required />
+                    </div>
+                    <div>
+                      <label class="form-label">Variant SKU<span class="req">*</span></label>
+                      <input type="text" placeholder="e.g. Apple-Small-01" class="variantSKU form-input"/>
+                    </div>
+                    <div>
+                      <label class="form-label">Barcode<span class="req">*</span></label>
+                      <input type="text" placeholder="e.g. 123456789" class="variantBarcode form-input"/>
+                    </div>
+                  </div>
+
+                  <!-- Stock qty + Low stock threshold -->
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                    <div>
+                      <label class="form-label">Stock Quantity <span class="req">*</span></label>
+                      <input type="number" placeholder="e.g. 10" min="1" class="variantStock form-input"/>
+                    </div>
+                    <div>
+                      <label class="form-label">Low Stock Alert<span class="req">*</span></label>
+                      <input type="number" placeholder="e.g. 5" min="1" class="variantLowStock form-input"/>
+                    </div>
+                    <div>
+                      <label class="form-label">Stock Policy<span class="req">*</span></label>
+                      <select class="variantStockPolicy form-input">
+                        <option value="block">Block when out of stock</option>
+                        <option value="notify">Notify only</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                    <div>
+                      <label class="form-label">Regular Price (₱) <span class="req">*</span></label>
+                      <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-forest-500 text-sm font-bold pointer-events-none">₱</span>
+                        <input type="number" placeholder="0.00" min="0" step="0.01" class="variantRegularPrice form-input" required />
+                      </div>
+                    </div>
+                    <div>
+                      <label class="form-label">Sale Price (₱) <span class="hint">optional</span></label>
+                      <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-forest-500 text-sm font-bold pointer-events-none">₱</span>
+                        <input type="number" placeholder="0.00" min="0" step="0.01" class="variantSalePrice form-input" />
+                      </div>
+                    </div>
+                    <div>
+                      <label class="form-label">Cost per Item (₱) <span class="hint">internal</span></label>
+                      <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-forest-500 text-sm font-bold pointer-events-none">₱</span>
+                        <input type="number" placeholder="0.00" min="0" step="0.01" class="variantCostPrice form-input pl-8" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Unit + Weight -->
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label class="form-label">Selling Unit <span class="req">*</span></label>
+                      <select class="variantUnit form-input" required >
+                        <option value="" disabled selected>Select unit</option>
+                        <option>kg</option><option>gram (g)</option><option>500g Pack</option>
+                        <option>1kg Pack</option><option>Piece/s</option><option>Bundle</option>
+                        <option>Liter (L)</option><option>Box</option><option>Sack</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="form-label">Weight (kg)</label>
+                      <input type="number" placeholder="0.50" min="0" step="0.01" class="variantWeight form-input"/>
+                    </div>
+                    <div>
+                      <label class="form-label">Expiration Date</label>
+                      <input type="date" class="variantExpirationDate form-input"/>
+                    </div>
+                  </div>
+
+                  <div class="mt-1 w-full text-sm text-forest-400 flex">
+                      <button type="button" class="removeVariantBtn ml-auto inline-flex items-center">
+                          <svg class="w-4 h-4 text-terra-500" fill="none" stroke="currentColor" stroke-width="2"
+                              viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M18 6L6 18"></path>
+                              <path d="M6 6l12 12"></path>
+                          </svg>
+                          Remove Variant 
+                          <span class="variantNameLabel text-harvest-500 ml-1">_blank</span>
+                      </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          
+
+          </div><!-- end left column -->
+
+          <!-- ════ RIGHT COLUMN (preview + publish) ════ -->
+          <div class="xl:col-span-1 space-y-5">
+
+            <!-- ── Publish Settings ── -->
+            <div class="fade-up d2 glass section-card sticky top-20">
+              <div class="flex items-center gap-3 mb-5">
+                <div class="w-8 h-8 bg-forest-500/15 rounded-xl flex items-center justify-center shrink-0">
+                  <svg class="w-4 h-4 text-forest-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div>
+                  <h2 class="font-display text-base text-white font-bold">Publish Settings</h2>
+                  <p class="text-forest-500 text-xs">Visibility and scheduling</p>
+                </div>
+              </div>
+
+              <!-- Schedule (hidden by default) -->
+              <div id="scheduleRow" class="hidden mb-4">
+                <label class="form-label">Publish Date &amp; Time</label>
+                <input type="datetime-local" id="pSchedule" class="form-input"/>
+              </div>
+
+              <!-- Toggles -->
+              <div class="space-y-3 mb-5">
+                <div class="flex items-center justify-between p-3 bg-forest-800/40 rounded-xl border border-forest-700/30">
+                  <div>
+                    <p class="text-forest-200 text-xs font-semibold">Featured Product</p>
+                    <p class="text-forest-500 text-[10px] mt-0.5">Highlight on homepage</p>
+                  </div>
+                  <div class="toggle-track" id="toggleFeatured" >
+                    <div class="toggle-thumb"></div>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between p-3 bg-forest-800/40 rounded-xl border border-forest-700/30">
+                  <div>
+                    <p class="text-forest-200 text-xs font-semibold">COD Available</p>
+                    <p class="text-forest-500 text-[10px] mt-0.5">Cash on delivery</p>
+                  </div>
+                  <div class="toggle-track on" id="toggleCOD" >
+                    <div class="toggle-thumb"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action buttons -->
+              <div class="space-y-2">
+                <button type="button" id="publishProductBtn" class="w-full bg-harvest-400 hover:bg-harvest-300 text-forest-900 font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                  Publish Product
+                </button>
+                <button type="button" id="saveDraftProductBtn" class="w-full bg-forest-700/60 hover:bg-forest-600/60 border border-forest-600/40 text-forest-200 font-semibold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                  Save as Draft
+                </button>
+                <a href="/a/products" class="w-full block text-center text-forest-500 hover:text-forest-300 transition text-sm py-2">
+                  ← Cancel &amp; go back
+                </a>
+              </div>
+            </div>
+
+          </div><!-- end right column -->
+        </div><!-- end grid -->
+      </form>
+
+
+
+
+<script src="/js/admin_product_new_app.js" defer ></script>
+<%- include ('partials/bottom') %>

@@ -1,0 +1,53 @@
+<%- include ('partials/user_top') %>
+
+<section class="max-w-7xl mx-auto px-6 py-14">
+  <div class="mb-8">
+    <h1 class="font-display text-4xl text-forest-900">Your Cart</h1>
+    <p class="text-forest-500 font-body">Review your organic selection before checkout.</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" id="cart-section">
+    
+
+    
+
+    
+
+    <div class="lg:col-span-2 space-y-4" id="cart-items-container"></div>
+    
+    
+    <div class="lg:col-span-1">
+      <div class="bg-forest-900 text-white rounded-3xl p-6 shadow-xl sticky top-24">
+        <h2 class="font-display text-2xl mb-6 text-harvest-300">Order Summary</h2>
+        
+        <div class="flex justify-between text-forest-200">
+          <div class="flex flex-col" >
+              <p class="text-forest-200">
+                <span class="text-sm">Total: </span>
+                <span class="text-sm" id="cart-item-count">(0 items)</span>
+              </p>
+              <p class="text-2xl font-bold text-white" id="cart-total-price">₱0.00</p>
+          </div>
+
+          <div>
+            <a href='/checkout' class="w-full bg-harvest-500 hover:bg-harvest-400 text-forest-900 font-bold py-4 px-3 rounded-xl transition shadow-lg shadow-harvest-900/20 flex items-center justify-center gap-2">
+              Checkout Now
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </a>
+          </div>
+        </div>
+        
+        <div class="mt-4 flex items-center justify-center gap-2 text-forest-400 text-xs uppercase tracking-widest font-bold">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+          Secure Payment
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<script src="/js/main_app.js" defer ></script>
+<script src="/js/user_cart_app.js" defer ></script>
+<%- include ('partials/user_bottom') %>

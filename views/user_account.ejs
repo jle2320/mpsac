@@ -1,0 +1,463 @@
+<%- include('partials/user_top') %>
+
+<style>
+  * { font-family: 'DM Sans', sans-serif; }
+  h1,h2,h3,.font-display { font-family: 'Playfair Display', serif; }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: #f2f9f2; }
+  ::-webkit-scrollbar-thumb { background: #3a9134; border-radius: 4px; }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(18px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  @keyframes pulse2 { 0%,100%{opacity:1;} 50%{opacity:.5;} }
+
+  .fade-up { animation: fadeUp .5s ease forwards; }
+  .d1{animation-delay:.05s;opacity:0;} .d2{animation-delay:.10s;opacity:0;}
+  .d3{animation-delay:.15s;opacity:0;} .d4{animation-delay:.20s;opacity:0;}
+  .d5{animation-delay:.25s;opacity:0;} .d6{animation-delay:.30s;opacity:0;}
+
+  .online-dot { animation: pulse2 2s infinite; }
+
+  /* Tab active underline */
+  .tab-link { position:relative; }
+  .tab-link.active::after {
+    content:''; position:absolute; bottom:-1px; left:0; right:0;
+    height:2px; background:#2d7429; border-radius:2px;
+  }
+
+  /* Card hover */
+  .stat-card { transition: transform .2s, box-shadow .2s; }
+  .stat-card:hover { transform:translateY(-3px); box-shadow:0 8px 28px rgba(45,116,41,.12); }
+
+  /* Order row hover */
+  .order-row { transition: background .15s; }
+  .order-row:hover { background: #f7fbf7; }
+
+  /* Address card hover */
+  .address-card { transition: border-color .2s, box-shadow .2s; }
+  .address-card:hover { border-color: #5cb356; box-shadow: 0 4px 16px rgba(45,116,41,.1); }
+
+  /* Badge */
+  .badge { display:inline-flex; align-items:center; padding:2px 10px; border-radius:99px; font-size:.68rem; font-weight:700; }
+
+  /* Input style */
+  .acc-input {
+    width:100%; background:#f7fbf7;
+    border:1.5px solid #e0f2df; border-radius:10px;
+    padding:10px 14px; font-size:.85rem; color:#183d17;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  .acc-input:focus { outline:none; border-color:#2d7429; box-shadow:0 0 0 3px rgba(45,116,41,.1); }
+  .acc-input::placeholder { color:#8fce8a; }
+
+  /* Progress bar */
+  .prog-fill { transition: width 1s cubic-bezier(.22,1,.36,1); }
+
+  /* Notification dot */
+  .notif-dot {
+    width:8px; height:8px; background:#f97316;
+    border-radius:50%; position:absolute; top:6px; right:6px;
+    animation: pulse2 2s infinite;
+  }
+
+
+
+
+
+
+
+
+
+  .modal-backdrop {
+    position:fixed; inset:0; z-index:100;
+    background:rgba(14,36,16,.55); backdrop-filter:blur(4px);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px;
+    opacity:0; pointer-events:none;
+    transition:opacity .25s;
+  }
+  .modal-backdrop.open { opacity:1; pointer-events:all; }
+  .modal-box {
+    background:#fff; border-radius:20px; width:100%; max-width:500px;
+    box-shadow:0 24px 64px rgba(14,36,16,.25);
+    transform:translateY(16px) scale(.97);
+    transition:transform .25s, opacity .25s;
+    opacity:0;
+  }
+  .modal-backdrop.open .modal-box { transform:translateY(0) scale(1); opacity:1; }
+</style>
+
+
+<main class="max-w-7xl mx-auto px-4 md:px-6 py-8">
+
+  <!-- ── PROFILE HERO BANNER ── -->
+  <div class="fade-up d1 relative rounded-3xl overflow-hidden mb-8">
+    <!-- Background -->
+    <div class="absolute inset-0 bg-gradient-to-r from-forest-900 via-forest-800 to-forest-700"></div>
+    <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1200&q=60"
+         alt="" class="absolute inset-0 w-full h-full object-cover opacity-15"/>
+    <div class="absolute inset-0 bg-gradient-to-t from-forest-950/80 via-transparent to-transparent"></div>
+
+    <div class="relative z-10 px-6 md:px-10 py-8 md:py-10 flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
+      <!-- Avatar + name -->
+      <div class="flex items-end gap-5">
+        <div class="relative">
+          <div class="avatarDisplay w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-harvest-400 flex items-center justify-center text-forest-900 font-display font-bold text-3xl shadow-xl shadow-forest-950/40">
+            <%- userData.userAvatar == 'not set'
+                ? userData.userFname[0] + userData.userLname[0]
+                : `<img src="${userData.userAvatar}" alt="${userData.userFname[0] + userData.userLname[0]}" class='rounded-2xl'>`
+            %>          
+          </div>
+          <span class="absolute bottom-1.5 right-1.5 w-4 h-4 bg-forest-400 rounded-full border-2 border-forest-800 online-dot"></span>
+        </div>
+        <div class="pb-1">
+          <div class="flex items-center gap-2.5 mb-1">
+            <h1 class="font-display text-2xl md:text-3xl text-white font-bold"><%= userData.userFname %> <%= userData.userLname %></h1>
+            <span class="bg-harvest-400/20 text-harvest-300 border border-harvest-400/30 text-[10px] font-bold px-2.5 py-0.5 rounded-full">Verified ✓</span>
+          </div>
+          <p class="text-forest-500 text-xs mt-1">Member since <%= new Date(userData.userAccountDateCreated).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric'} ) %> · 47 orders completed</p>
+        </div>
+      </div>
+
+      <!-- Quick stats -->
+      <div class="flex gap-6">
+        <div class="text-center">
+          <p class="font-display text-2xl text-harvest-400 font-bold">47</p>
+          <p class="text-forest-400 text-xs mt-0.5">Orders</p>
+        </div>
+        <div class="w-px bg-forest-700"></div>
+        <div class="text-center">
+          <p class="font-display text-2xl text-harvest-400 font-bold">12</p>
+          <p class="text-forest-400 text-xs mt-0.5">Reviews</p>
+        </div>
+        <div class="w-px bg-forest-700"></div>
+        <div class="text-center">
+          <p class="font-display text-2xl text-harvest-400 font-bold">₱8.4k</p>
+          <p class="text-forest-400 text-xs mt-0.5">Total Spent</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       TWO COLUMN LAYOUT
+  ══════════════════════════════ -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- ═══ LEFT SIDEBAR ═══ -->
+    <div class="lg:col-span-1 space-y-5">
+
+      <!-- Profile Completion -->
+      <div class="fade-up d2 bg-white rounded-2xl border border-forest-100 p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-semibold text-forest-800 text-sm">Profile Completion</h3>
+          <span class="text-harvest-600 font-bold text-sm">75%</span>
+        </div>
+        <div class="h-2 bg-forest-100 rounded-full overflow-hidden mb-3">
+          <div class="prog-fill h-full bg-gradient-to-r from-forest-500 to-harvest-400 rounded-full" style="width:75%"></div>
+        </div>
+        <div class="space-y-2">
+          <div class="flex items-center gap-2 text-xs">
+            <div class="w-4 h-4 rounded-full bg-forest-100 flex items-center justify-center shrink-0">
+              <svg class="w-2.5 h-2.5 text-forest-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 0 1 0 1.414l-8 8a1 1 0 0 1-1.414 0l-4-4a1 1 0 0 1 1.414-1.414L8 12.586l7.293-7.293a1 1 0 0 1 1.414 0z" clip-rule="evenodd"/></svg>
+            </div>
+            <span class="text-forest-600">Profile photo added</span>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <div class="w-4 h-4 rounded-full bg-forest-100 flex items-center justify-center shrink-0">
+              <svg class="w-2.5 h-2.5 text-forest-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 0 1 0 1.414l-8 8a1 1 0 0 1-1.414 0l-4-4a1 1 0 0 1 1.414-1.414L8 12.586l7.293-7.293a1 1 0 0 1 1.414 0z" clip-rule="evenodd"/></svg>
+            </div>
+            <span class="text-forest-600">Email verified</span>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <div class="w-4 h-4 rounded-full bg-forest-100 flex items-center justify-center shrink-0">
+              <svg class="w-2.5 h-2.5 text-forest-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 0 1 0 1.414l-8 8a1 1 0 0 1-1.414 0l-4-4a1 1 0 0 1 1.414-1.414L8 12.586l7.293-7.293a1 1 0 0 1 1.414 0z" clip-rule="evenodd"/></svg>
+            </div>
+            <span class="text-forest-600">Phone number added</span>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <div class="w-4 h-4 rounded-full bg-forest-50 border border-forest-200 flex items-center justify-center shrink-0">
+              <div class="w-1.5 h-1.5 rounded-full bg-forest-200"></div>
+            </div>
+            <span class="text-forest-400">Add delivery address</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Navigation -->
+      <div class="fade-up d3 bg-white rounded-2xl border border-forest-100 overflow-hidden shadow-sm">
+        <div class="px-5 py-3.5 border-b border-forest-50">
+          <p class="text-forest-500 text-[10px] font-bold uppercase tracking-widest">Navigation</p>
+        </div>
+        <nav class="p-2">
+          <a href="#profile" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-forest-700 text-sm font-medium bg-forest-50 mb-1 group">
+            <div class="w-7 h-7 bg-forest-100 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-forest-200 transition">
+              <svg class="w-3.5 h-3.5 text-forest-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            Personal Info
+          </a>
+          <a href="#addresses" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-forest-600 text-sm hover:bg-forest-50 hover:text-forest-800 mb-1 group transition">
+            <div class="w-7 h-7 bg-forest-50 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-forest-100 transition">
+              <svg class="w-3.5 h-3.5 text-forest-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            Addresses
+          </a>
+          <a href="#security" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-forest-600 text-sm hover:bg-forest-50 hover:text-forest-800 group transition">
+            <div class="w-7 h-7 bg-forest-50 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-forest-100 transition">
+              <svg class="w-3.5 h-3.5 text-forest-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            Security
+          </a>
+        </nav>
+        <div class="px-2 pb-2 pt-1 border-t border-forest-50">
+          <a href="/acccount/logout" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-terra-600 hover:bg-terra-50 text-sm group transition">
+            <div class="w-7 h-7 bg-terra-50 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-terra-100 transition">
+              <svg class="w-3.5 h-3.5 text-terra-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </div>
+            Sign Out
+          </a>
+        </div>
+      </div>
+
+      <!-- Loyalty Points -->
+      <div class="fade-up d4 relative bg-gradient-to-br from-forest-800 to-forest-900 rounded-2xl p-5 overflow-hidden">
+        <div class="absolute -top-6 -right-6 w-28 h-28 bg-harvest-400/10 rounded-full blur-2xl"></div>
+        <div class="absolute bottom-0 left-0 w-20 h-20 bg-forest-600/30 rounded-full blur-xl"></div>
+        <div class="relative z-10">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-8 h-8 bg-harvest-400/20 rounded-xl flex items-center justify-center">
+              <svg class="w-4 h-4 text-harvest-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 0 0-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292z"/></svg>
+            </div>
+            <p class="text-forest-300 text-xs font-semibold uppercase tracking-wider">Harvest Points</p>
+          </div>
+          <p class="font-display text-3xl text-white font-bold mb-1">2,840</p>
+          <p class="text-forest-400 text-xs mb-4">≈ ₱28.40 reward value</p>
+          <div class="mb-2">
+            <div class="flex justify-between text-xs mb-1.5">
+              <span class="text-forest-400">Silver Farmer</span>
+              <span class="text-forest-300">2,840 / 5,000</span>
+            </div>
+            <div class="h-1.5 bg-forest-700 rounded-full overflow-hidden">
+              <div class="h-full w-[57%] bg-gradient-to-r from-harvest-400 to-harvest-500 rounded-full"></div>
+            </div>
+          </div>
+          <p class="text-forest-500 text-[10px]">2,160 pts to Gold Farmer tier 🌟</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══ RIGHT MAIN CONTENT ═══ -->
+    <div class="lg:col-span-2 space-y-6">
+
+
+
+
+
+
+
+      
+      <!-- ── PERSONAL INFO ── -->
+      <section id="profile" class="fade-up d2 bg-white rounded-2xl border border-forest-100 overflow-hidden shadow-sm">
+        <div class="px-6 py-4 border-b border-forest-50 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-forest-100 rounded-xl flex items-center justify-center">
+              <svg class="w-4 h-4 text-forest-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <h2 class="font-display text-lg text-forest-900 font-bold">Personal Information</h2>
+          </div>
+          <button id="editProfileBtn" class="flex items-center gap-1.5 text-forest-500 hover:text-forest-700 text-xs font-semibold bg-forest-50 hover:bg-forest-100 px-3 py-1.5 rounded-lg transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <span id="edit-profile-label">Edit Profile</span>
+          </button>
+        </div>
+        <div class="p-6">
+          <!-- Avatar -->
+          <div class="flex items-center gap-5 mb-6 pb-6 border-b border-forest-50">
+            <div class="relative">
+              <div class="avatarDisplay w-20 h-20 rounded-2xl bg-harvest-400 flex items-center justify-center text-forest-900 font-display font-bold text-3xl shadow-lg" >
+                <%- userData.userAvatar == 'not set'
+                    ? userData.userFname[0] + userData.userLname[0]
+                    : `<img src="${userData.userAvatar}" alt="${userData.userFname[0] + userData.userLname[0]}" class='w-full h-full object-cover rounded-2xl'>`
+                %>
+              </div>
+              <button id="avatar-upload-btn" class="absolute -bottom-1.5 -right-1.5 w-7 h-7 bg-forest-600 hover:bg-forest-700 rounded-xl flex items-center justify-center transition shadow-md" title="Change photo">
+                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </button>
+              <input type="file" id="inputAvatar" accept="image/*" hidden>
+            </div>
+            <div>
+              <p id="profile-fullname" class="text-forest-800 font-semibold text-sm"><%= userData.userFname %> <%= userData.userLname %></p>
+              <p class="text-forest-400 text-xs mt-0.5"><%= userData.userEmail %></p>
+              <p class="text-forest-400 text-xs mt-0.5"><%= userData.userPhone %></p>
+            </div>
+          </div>
+
+          <!-- View mode -->
+          <div id="profileView">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label class="block text-xs font-semibold text-forest-500 uppercase tracking-wider mb-2">First Name</label>
+                <input class="acc-input text-forest-800" id="viewFirstname" value="<%= userData.userFname %>" disabled >
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-forest-500 uppercase tracking-wider mb-2">Last Name</label>
+                <input class="acc-input text-forest-800" id="viewLastname" value="<%= userData.userLname %>" disabled >
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div> 
+                <label class="block text-xs font-semibold text-forest-500 uppercase tracking-wider mb-2">Birthday </label>
+                <input type="date" class="acc-input text-forest-800" id="viewBirthday" value="<%= new Date(userData.userBday).toISOString().split('T')[0] %>" disabled >
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-forest-500 uppercase tracking-wider mb-2">Gender</label>
+                <select class="acc-input text-forest-800" id="viewGender" disabled >
+                    <option value="">Not Set</option>
+                    <option <%= userData.userGender == 'Male' ? 'selected' : '' %> >Male</option>
+                    <option <%= userData.userGender == 'Female' ? 'selected' : '' %> >Female</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label class="block text-xs font-semibold text-forest-500 uppercase tracking-wider mb-2">Email Address</label>
+                <div class="relative">
+                  <input class="acc-input text-forest-800" id="viewEmail" value="<%= userData.userEmail %>" disabled >
+                  <span style="right: 10px; top:12px" class="<%= userData.userEmailVerified == 'true' ? '' : 'hidden' %> absolute ml-auto text-[10px] bg-forest-100 text-forest-600 font-bold px-2 py-0.5 rounded-full shrink-0">Verified ✓</span>
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-forest-500 uppercase tracking-wider mb-2">Phone Number</label>
+                <div class="relative">
+                  <input class="acc-input text-forest-800" id="viewPhone" value="<%= userData.userPhone %>" disabled >
+                  <span style="right: 10px; top:12px" class="<%= userData.userPhoneVerified == 'true' ? '' : 'hidden' %> absolute ml-auto text-[10px] bg-forest-100 text-forest-600 font-bold px-2 py-0.5 rounded-full shrink-0">Verified ✓</span>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-xs font-semibold text-forest-500 uppercase tracking-wider mb-2">Bio</label>
+              <textarea class="acc-input text-forest-600 text-sm leading-relaxed" id="viewBio" disabled><%= userData.userBio %></textarea>
+            </div>
+
+            <div class="flex gap-2" id="updateAccountButtons"></div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ── DELIVERY ADDRESSES ── -->
+      <section id="addresses" class="fade-up d4 bg-white rounded-2xl border border-forest-100 overflow-hidden shadow-sm">
+        <div class="px-6 py-4 border-b border-forest-50 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-forest-100 rounded-xl flex items-center justify-center">
+              <svg class="w-4 h-4 text-forest-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <h2 class="font-display text-lg text-forest-900 font-bold">Delivery Addresses</h2>
+          </div>
+          <button type="button" id="addAddressBtn" class="flex items-center gap-1.5 text-forest-600 hover:text-forest-800 text-xs font-semibold bg-forest-50 hover:bg-forest-100 px-3 py-1.5 rounded-lg transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add New
+          </button>
+        </div>
+        <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+          <% if (userData) { %>
+
+            <% userData.deliveryAddress.forEach(address => { %>
+              <div class="address-card border-2 border-forest-500 rounded-xl p-4 bg-forest-50/50 relative">
+                <% if (address.addressDefault == 'true') { %>
+                  <div class="absolute top-3 right-3 bg-forest-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Default</div>
+                <% } %>
+                <div class="flex items-start gap-3 mb-3">
+                  <div class="w-8 h-8 bg-forest-100 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-4 h-4 text-forest-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                  </div>
+                  <div>
+                    <p class="text-forest-800 font-semibold text-sm"><%= address.addressLabel %></p>
+                    <p class="text-forest-600 text-xs mt-0.5"><%= address.contactPerson %></p>
+                    <p class="text-forest-500 text-xs"><%= address.contactNumber %></p>
+                  </div>
+                </div>
+                <p class="text-forest-700 text-xs leading-relaxed mb-3">
+                  <%= address.addressStreet %>, 
+                  <%= address.addressBarangay %>, 
+                  <%= address.addressCity %>, 
+                  <%= address.addressProvince %>
+                </p>
+                <p class="text-forest-700 text-xs leading-relaxed mb-3">
+                  Landmark: <%= address.addressLandmark %>
+                </p>
+                <div class="flex gap-2">
+                  <% if (address.addressDefault == 'false') { %>
+                    <button type="button" data-id="<%= address.addressID %>" class="setAsDefaultAddress text-forest-500 hover:text-forest-700 text-xs font-medium border border-forest-100 hover:border-forest-300 px-3 py-1.5 rounded-lg transition">Set Default</button>
+                  <% } %>
+                  <button type="button" data-id="<%= address.addressID %>" class="deleteAddress text-forest-400 hover:text-terra-500 text-xs font-medium px-3 py-1.5 rounded-lg transition">Remove</button>
+                </div>
+              </div>
+            <% }) %>
+
+          <% } else { %>
+
+            <p class="text-forest-800 font-semibold text-sm">No Delivery address</p>
+
+          <% } %>
+        </div>
+      </section>
+
+
+      <!-- ── SECURITY ── -->
+      <section id="security" class="fade-up d6 bg-white rounded-2xl border border-forest-100 overflow-hidden shadow-sm">
+        <div class="px-6 py-4 border-b border-forest-50 flex items-center gap-3">
+          <div class="w-8 h-8 bg-forest-100 rounded-xl flex items-center justify-center">
+            <svg class="w-4 h-4 text-forest-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h2 class="font-display text-lg text-forest-900 font-bold">Security</h2>
+        </div>
+        <div class="p-5 space-y-3">
+          <!-- Password -->
+          <div class="flex items-center justify-between p-4 bg-forest-50 border border-forest-100 rounded-xl">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 bg-white rounded-xl border border-forest-200 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-forest-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div>
+                <p class="text-forest-800 text-sm font-semibold">Password</p>
+                <p data-date="<%= userData.userPasswordLastDateUpdated %>" class="text-forest-400 text-xs password-time"></p>
+              </div>
+            </div>
+            <button type="button" id="changePasswordBtn" class="text-forest-600 hover:text-forest-800 text-xs font-semibold border border-forest-200 hover:border-forest-400 px-3 py-1.5 rounded-lg transition bg-white">Change</button>
+          </div>
+
+          <!-- Danger zone -->
+          <div class="p-4 bg-terra-50 border border-terra-100 rounded-xl">
+            <p class="text-terra-700 text-sm font-semibold mb-1 flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Danger Zone
+            </p>
+            <p class="text-terra-600 text-xs mb-3">These actions are permanent and cannot be undone.</p>
+            <div class="flex gap-2 flex-wrap">
+              <button class="text-terra-600 hover:text-terra-800 text-xs font-semibold border border-terra-200 hover:border-terra-400 bg-white px-3 py-1.5 rounded-lg transition">Deactivate Account</button>
+              <button class="text-terra-700 hover:text-terra-900 text-xs font-bold border border-terra-300 hover:border-terra-500 bg-terra-100 hover:bg-terra-200 px-3 py-1.5 rounded-lg transition">Delete Account</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- end right column -->
+  </div><!-- end two-col grid -->
+
+  <div id="modalDeliveryAddress" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-box">
+      <div id="modalContentDeliveryAddress" ></div>
+    </div>
+  </div>
+</main>
+
+<script src="/js/psgc.js" defer ></script>
+<script src="/js/user_account_app.js" defer ></script>
+<%- include('partials/user_bottom') %>

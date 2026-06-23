@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title><%= tabTitle %></title>
+<link rel="icon" href="/images/logo.png" type="image/png">
+<link rel="stylesheet" href="/css/mystyle.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { font-family: 'DM Sans', sans-serif; }
+  h1,h2,h3,.font-display { font-family: 'Playfair Display', serif; }
+
+  /* ── Grain overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.5;
+  }
+
+  /* ── Animated field background ── */
+  .bg-field {
+    background:
+      linear-gradient(135deg, #0e2410 0%, #183d17 40%, #255e22 70%, #7c2d12 100%);
+  }
+
+  /* ── Floating orbs ── */
+  @keyframes orb1 { 0%,100%{transform:translate(0,0) scale(1);}  50%{transform:translate(40px,-30px) scale(1.08);} }
+  @keyframes orb2 { 0%,100%{transform:translate(0,0) scale(1);}  50%{transform:translate(-30px,40px) scale(0.94);} }
+  @keyframes orb3 { 0%,100%{transform:translate(0,0) scale(1);}  50%{transform:translate(20px,25px) scale(1.05);} }
+  .orb1 { animation: orb1 12s ease-in-out infinite; }
+  .orb2 { animation: orb2 16s ease-in-out infinite; }
+  .orb3 { animation: orb3 10s ease-in-out infinite; }
+
+  /* ── Leaf float ── */
+  @keyframes leafFloat { 0%,100%{transform:translateY(0) rotate(-4deg);} 50%{transform:translateY(-20px) rotate(4deg);} }
+  .leaf-float { animation: leafFloat 6s ease-in-out infinite; }
+
+  /* ── Panel slide-up ── */
+  @keyframes panelIn { from{opacity:0;transform:translateY(28px);} to{opacity:1;transform:translateY(0);} }
+  .panel-in { animation: panelIn 0.7s cubic-bezier(.22,1,.36,1) forwards; }
+
+  /* ── Stagger ── */
+  .d1{animation-delay:.08s;opacity:0;}
+  .d2{animation-delay:.16s;opacity:0;}
+  .d3{animation-delay:.24s;opacity:0;}
+  .d4{animation-delay:.32s;opacity:0;}
+  .d5{animation-delay:.40s;opacity:0;}
+  .d6{animation-delay:.48s;opacity:0;}
+
+  /* ── Input focus ring ── */
+  .field-input {
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    color: #e0f2df;
+    transition: border-color .2s, background .2s, box-shadow .2s;
+  }
+  .field-input::placeholder { color: rgba(143,206,138,0.45); }
+  .field-input:focus {
+    outline: none;
+    border-color: #fbbf24;
+    background: rgba(255,255,255,0.10);
+    box-shadow: 0 0 0 3px rgba(251,191,36,0.18);
+  }
+
+  /* ── Show password toggle ── */
+  .eye-btn { color: rgba(143,206,138,0.5); transition: color .2s; }
+  .eye-btn:hover { color: #fbbf24; }
+
+  /* ── Submit button pulse on hover ── */
+  .submit-btn {
+    background: linear-gradient(135deg, #fbbf24 0%, #f97316 100%);
+    transition: transform .15s, box-shadow .15s, filter .15s;
+  }
+  .submit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 32px rgba(249,115,22,.40);
+    filter: brightness(1.06);
+  }
+  .submit-btn:active { transform: translateY(0); }
+
+  /* ── Decorative diagonal band ── */
+  .diagonal-band {
+    clip-path: polygon(0 18%, 100% 0%, 100% 82%, 0% 100%);
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: #0e2410; }
+  ::-webkit-scrollbar-thumb { background: #3a9134; border-radius: 3px; }
+
+  /* ── Error shake ── */
+  @keyframes shake { 0%,100%{transform:translateX(0);} 20%,60%{transform:translateX(-6px);} 40%,80%{transform:translateX(6px);} }
+  .shake { animation: shake 0.4s ease; }
+
+  /* ── Spinner ── */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner { animation: spin 0.8s linear infinite; }
+
+
+
+
+
+
+
+
+
+
+#toast{
+  position:fixed;
+  top:24px;
+  right:24px;
+  z-index:500;
+  border-radius:14px;
+  padding:12px 16px;
+  box-shadow:0 8px 32px rgba(8,22,9,.4);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:.8rem;
+  color:#e0f2df;
+  transition:opacity .3s,transform .3s;
+  opacity:0;
+  transform:translateY(12px);
+  pointer-events:none;
+  max-width:300px;
+}
+#toast.show{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:all;
+}
+</style>
+</head>
+
+<body class="bg-field min-h-screen flex">
+<div id="toast">
+  <span id="toast-msg"></span>
+</div>
+
+  <!-- ══════════════ AMBIENT ORBS ══════════════ -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+    <div class="orb1 absolute -top-32 -left-32 w-[520px] h-[520px] rounded-full bg-forest-600/25 blur-[90px]"></div>
+    <div class="orb2 absolute bottom-0 right-0 w-[440px] h-[440px] rounded-full bg-terra-700/20 blur-[80px]"></div>
+    <div class="orb3 absolute top-1/2 left-1/3 w-[300px] h-[300px] rounded-full bg-harvest-700/15 blur-[70px]"></div>
+  </div>
+
+  <!-- ══════════════ LEFT PANEL (desktop) ══════════════ -->
+  <aside class="hidden lg:flex relative w-[52%] flex-col justify-start gap-10 align-top p-14">
+
+    <!-- Diagonal texture strip -->
+    <div class="diagonal-band absolute inset-0 bg-forest-900/40 pointer-events-none"></div>
+
+    <!-- Farm image layer -->
+    <div class="absolute inset-0">
+      <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1200&q=85"
+           alt="Farm" class="w-full h-full object-cover opacity-25"/>
+      <div class="absolute inset-0 bg-gradient-to-br from-forest-950/90 via-forest-900/70 to-transparent"></div>
+    </div>
+
+    <!-- Top — Logo -->
+    <div class="relative z-10 panel-in d1">
+      <a href="/" class="inline-flex items-center gap-3">
+        <div class="w-9 h-9 bg-harvest-400 rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-harvest-900/30">
+          <img src="/images/logo.png" />
+        </div>
+        <span class="font-display text-2xl text-white font-bold tracking-wide">MP<span class="text-harvest-400">SAC</span></span>
+      </a>
+    </div>
+
+    <!-- Middle — Headline -->
+    <div class="relative z-10">
+      <div class="panel-in d2 inline-flex items-center gap-2 bg-forest-800/60 border border-forest-600/40 text-forest-300 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-6 backdrop-blur-sm">
+        <span class="w-1.5 h-1.5 bg-harvest-400 rounded-full animate-pulse"></span>
+        New Customer Registration
+      </div>
+      <h1 class="panel-in d3 font-display text-5xl xl:text-6xl text-white leading-tight mb-5">
+        Join Our,<br/>
+        <span class="text-harvest-400">Fresh Marketplace</span><br/>
+        Today.
+      </h1>
+      <p class="panel-in d4 text-forest-300 text-base leading-relaxed max-w-sm">
+        Discover fresh organic produce directly from local farmers and enjoy a smarter farm-to-table shopping experience.
+      </p>
+
+       <!-- Feature pills -->
+      <div class="panel-in d5 flex flex-wrap gap-2 mt-8">
+        <span class="flex items-center gap-1.5 bg-forest-800/50 border border-forest-600/30 text-forest-300 text-xs px-3 py-1.5 rounded-full">
+          🌱 Fresh Produce
+        </span>
+
+        <span class="flex items-center gap-1.5 bg-forest-800/50 border border-forest-600/30 text-forest-300 text-xs px-3 py-1.5 rounded-full">
+          🚚 Fast Delivery
+        </span>
+
+        <span class="flex items-center gap-1.5 bg-forest-800/50 border border-forest-600/30 text-forest-300 text-xs px-3 py-1.5 rounded-full">
+          🧺 Organic Products
+        </span>
+
+        <span class="flex items-center gap-1.5 bg-forest-800/50 border border-forest-600/30 text-forest-300 text-xs px-3 py-1.5 rounded-full">
+          👨‍🌾 Support Farmers
+        </span>
+      </div>
+    </div>
+
+    <!-- Bottom — Stats -->
+    <div class="panel-in d6 relative z-10 flex gap-8 pt-8 border-t border-white/10">
+      <div class="panel-in d6 relative z-10 flex gap-8 pt-8 border-t border-white/10">
+        <div>
+          <p class="font-display text-2xl text-harvest-400 font-bold">1,200+</p>
+          <p class="text-forest-400 text-xs mt-0.5">Products</p>
+        </div>
+
+        <div class="w-px bg-white/10"></div>
+
+        <div>
+          <p class="font-display text-2xl text-harvest-400 font-bold">340+</p>
+          <p class="text-forest-400 text-xs mt-0.5">Farmers</p>
+        </div>
+
+        <div class="w-px bg-white/10"></div>
+
+        <div>
+          <p class="font-display text-2xl text-harvest-400 font-bold">15k+</p>
+          <p class="text-forest-400 text-xs mt-0.5">Customers</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating leaf -->
+    <div class="leaf-float absolute top-24 right-10 text-5xl opacity-20 select-none" aria-hidden="true">🌿</div>
+    <div class="leaf-float absolute bottom-36 right-24 text-3xl opacity-15 select-none" style="animation-delay:3s" aria-hidden="true">🍃</div>
+  </aside>
+
+  <!-- ══════════════ RIGHT PANEL — LOGIN FORM ══════════════ -->
+  <main class="flex-1 flex flex-col items-center justify-center px-10 py-10 relative z-10">
+
+    <!-- Mobile logo -->
+    <div class="lg:hidden panel-in d1 mb-10 flex items-center gap-3">
+      <div class="w-9 h-9 bg-harvest-400 rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-harvest-900/30">
+        <img src="/images/logo.png" />
+      </div>
+      <span class="font-display text-2xl text-white font-bold tracking-wide">MP<span class="text-harvest-400">SAC</span></span>
+    </div>
+
+    <!-- Card -->
+    <div class="w-full">
+
+      <!-- Header -->
+      <div class="panel-in d2 mb-8">
+        <div class="inline-flex items-center gap-2 bg-forest-800/70 border border-forest-600/40 text-forest-300 text-xs font-semibold px-3 py-1.5 rounded-full mb-4 backdrop-blur-sm">
+          <svg class="w-3.5 h-3.5 text-harvest-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Join Moises Padilla Sustaintable Agriculture Cooperative
+        </div>
+        <h2 class="font-display text-3xl xl:text-4xl text-white font-bold leading-tight">
+          Create Your,<br/><span class="text-harvest-400">Customer Account</span>
+        </h2>
+        <p class="text-forest-400 text-sm mt-2">Register to start shopping fresh farm products online.</p>
+      </div>
+
+      <!-- Form card -->
+      <div class="panel-in d3 bg-forest-900/60 backdrop-blur-xl border border-forest-700/60 rounded-2xl p-8 shadow-2xl shadow-forest-950/60">
+
+        <form id="adminLoginForm" novalidate>
+
+
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div class="panel-in d4 mb-5">
+                <label for="inputFname" class="block text-xs font-semibold text-forest-300 uppercase tracking-wider mb-2">First Name</label>
+                <input id="inputFname" type="text" placeholder="Juan" autocomplete="username" class="field-input w-full px-4 py-3.5 rounded-xl text-sm" />
+              </div>
+
+              <div class="panel-in d4 mb-5">
+                <label for="inputLname" class="block text-xs font-semibold text-forest-300 uppercase tracking-wider mb-2">Last Name</label>
+                <input id="inputLname" type="text" placeholder="Dela Cruz" autocomplete="username" class="field-input w-full px-4 py-3.5 rounded-xl text-sm" />
+              </div>
+          </div>
+
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div class="panel-in d4 mb-5">
+                <label for="inputBday" class="block text-xs font-semibold text-forest-300 uppercase tracking-wider mb-2">Birthdate</label>
+                <input id="inputBday" type="date" class="field-input w-full px-4 py-3.5 rounded-xl text-sm" />
+              </div>
+
+              <div class="panel-in d4 mb-5">
+                <label for="inputGender" class="block text-xs font-semibold text-forest-300 uppercase tracking-wider mb-2">Gender</label>
+                <select id="inputGender" class="field-input w-full px-4 py-3.5 rounded-xl text-sm" >
+                    <option class="text-forest-500">Male</option>
+                    <option class="text-forest-500">Female</option>
+                </select>
+              </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div class="panel-in d4 mb-5">
+                <label for="inputEmail" class="block text-xs font-semibold text-forest-300 uppercase tracking-wider mb-2">Email</label>
+                <input id="inputEmail" type="email" placeholder='juandelacruz@mail.com' class="field-input w-full px-4 py-3.5 rounded-xl text-sm" />
+              </div>
+
+              <div class="panel-in d4 mb-5">
+                <label for="inputPhone" class="block text-xs font-semibold text-forest-300 uppercase tracking-wider mb-2">Phone No.</label>
+                <input id="inputPhone" type="email" placeholder='09123456789' class="field-input w-full px-4 py-3.5 rounded-xl text-sm" />
+              </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div class="panel-in d4 mb-5">
+                <label for="inputPassword" class="block text-xs font-semibold text-forest-300 uppercase tracking-wider mb-2">Password</label>
+                <input id="inputPassword" type="password" placeholder='*************' class="field-input w-full px-4 py-3.5 rounded-xl text-sm" />
+              </div>
+
+              <div class="panel-in d4 mb-5">
+                <label for="inputConfirmPassword" class="block text-xs font-semibold text-forest-300 uppercase tracking-wider mb-2">Confirm Password</label>
+                <input id="inputConfirmPassword" type="password" placeholder='*************' class="field-input w-full px-4 py-3.5 rounded-xl text-sm" />
+              </div>
+          </div>
+
+          <!-- Terms -->
+          <div class="flex items-center gap-2 mb-6">
+            <input type="checkbox" class="w-4 h-4 accent-forest-500" id="inputAgreement"/>
+            <span class="text-forest-400 text-xs">
+              I agree to the Terms & Conditions
+            </span>
+          </div>
+
+
+
+          <!-- Submit -->
+          <button type="button" id="registerAccountButton" class="submit-btn w-full py-4 rounded-xl font-bold text-forest-900 text-base flex items-center justify-center gap-2 relative overflow-hidden">
+            <span id="btnLabel" class="flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+              Create Account
+            </span>
+            <span id="btnSpinner" class="hidden">
+              <svg class="spinner w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+            </span>
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="flex items-center gap-3 my-6">
+          <div class="flex-1 h-px bg-forest-700/50"></div>
+          <span class="text-forest-600 text-xs">secured by</span>
+          <div class="flex-1 h-px bg-forest-700/50"></div>
+        </div>
+
+        <!-- Security badges -->
+        <div class="flex items-center justify-center gap-6 text-center">
+          <div class="flex flex-col items-center gap-1">
+            <div class="w-8 h-8 bg-forest-800/70 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-forest-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <span class="text-forest-500 text-[10px]">SSL Secure</span>
+          </div>
+          <div class="flex flex-col items-center gap-1">
+            <div class="w-8 h-8 bg-forest-800/70 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-forest-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <span class="text-forest-500 text-[10px]">Encrypted</span>
+          </div>
+          <div class="flex flex-col items-center gap-1">
+            <div class="w-8 h-8 bg-forest-800/70 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-forest-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <span class="text-forest-500 text-[10px]">Role-Based</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Back link -->
+      <div class="panel-in d6 text-center mt-6">
+        <a href="/" class="inline-flex items-center gap-1.5 text-forest-400 hover:text-harvest-300 text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m19 12H5"/><path d="m12 5-7 7 7 7"/></svg>
+          Already have an account? Sign In
+        </a>
+      </div>
+    </div>
+  </main>
+<script src="/js/main_app.js" defer ></script>
+<script src="/js/user_account_register_app.js" defer ></script>
+</body>
+</html>

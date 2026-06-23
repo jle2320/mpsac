@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>404 - Page Not Found · MPSAC</title>
+<link rel="icon" href="/images/logo.png" type="image/png">
+<link rel="stylesheet" href="/css/output.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+
+
+
+
+
+
+
+
+
+
+<style>
+  *{ font-family:'DM Sans',sans-serif; box-sizing:border-box; margin:0; padding:0; }
+  h1,h2,h3,.font-display{ font-family:'Playfair Display',serif; }
+
+  /* grain */
+  body::before{
+    content:'';position:fixed;inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events:none;z-index:9999;opacity:.5;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar{width:5px;}
+  ::-webkit-scrollbar-track{background:#0e2410;}
+  ::-webkit-scrollbar-thumb{background:#3a9134;border-radius:3px;}
+
+  /* orbs */
+  @keyframes orb1{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(40px,-30px) scale(1.08);}}
+  @keyframes orb2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-30px,40px) scale(.94);}}
+  @keyframes orb3{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(20px,25px) scale(1.05);}}
+  .orb1{animation:orb1 12s ease-in-out infinite;}
+  .orb2{animation:orb2 16s ease-in-out infinite;}
+  .orb3{animation:orb3 10s ease-in-out infinite;}
+
+  /* leaf */
+  @keyframes leafFloat{0%,100%{transform:translateY(0) rotate(-4deg);}50%{transform:translateY(-22px) rotate(5deg);}}
+  .leaf{animation:leafFloat 5s ease-in-out infinite;}
+  .leaf2{animation:leafFloat 7s ease-in-out infinite;animation-delay:2s;}
+  .leaf3{animation:leafFloat 6s ease-in-out infinite;animation-delay:4s;}
+
+  /* panel slide-up */
+  @keyframes panelIn{from{opacity:0;transform:translateY(32px);}to{opacity:1;transform:translateY(0);}}
+  .panel-in{animation:panelIn .7s cubic-bezier(.22,1,.36,1) forwards;}
+  .d1{animation-delay:.06s;opacity:0;} .d2{animation-delay:.14s;opacity:0;}
+  .d3{animation-delay:.22s;opacity:0;} .d4{animation-delay:.30s;opacity:0;}
+  .d5{animation-delay:.38s;opacity:0;} .d6{animation-delay:.46s;opacity:0;}
+
+  /* big 404 glitch number */
+  @keyframes glitch1{0%,100%{clip-path:inset(0 0 98% 0);}10%{clip-path:inset(20% 0 60% 0);}20%{clip-path:inset(60% 0 10% 0);}30%{clip-path:inset(0 0 98% 0);}}
+  @keyframes glitch2{0%,100%{clip-path:inset(98% 0 0 0);}10%{clip-path:inset(40% 0 40% 0);}20%{clip-path:inset(10% 0 80% 0);}30%{clip-path:inset(98% 0 0 0);}}
+  .glitch-wrap{position:relative;display:inline-block;}
+  .glitch-wrap::before,.glitch-wrap::after{
+    content:attr(data-text);
+    position:absolute;inset:0;
+    font-family:'Playfair Display',serif;font-weight:900;
+    font-size:inherit;line-height:inherit;color:inherit;
+  }
+  .glitch-wrap::before{
+    color:#fbbf24;left:3px;
+    animation:glitch1 3.5s infinite linear;
+  }
+  .glitch-wrap::after{
+    color:#f97316;left:-3px;
+    animation:glitch2 3.5s infinite linear;
+    animation-delay:.5s;
+  }
+
+  /* floating seed particles */
+  @keyframes seed{
+    0%  {transform:translateY(0)   rotate(0deg);   opacity:.7;}
+    100%{transform:translateY(-160px) rotate(360deg); opacity:0;}
+  }
+  .seed{
+    position:absolute;width:6px;height:6px;border-radius:50%;
+    background:#3a9134;animation:seed 4s ease-in infinite;
+  }
+
+  /* button */
+  .btn-primary{
+    background:linear-gradient(135deg,#fbbf24 0%,#f97316 100%);
+    color:#183d17;font-weight:700;
+    transition:transform .15s,box-shadow .15s,filter .15s;
+  }
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(249,115,22,.4);filter:brightness(1.06);}
+  .btn-primary:active{transform:translateY(0);}
+
+  .btn-ghost{
+    background:rgba(255,255,255,.06);
+    border:1.5px solid rgba(255,255,255,.12);
+    color:#8fce8a;
+    transition:background .2s,border-color .2s,color .2s;
+  }
+  .btn-ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(251,191,36,.4);color:#fbbf24;}
+
+  /* divider */
+  .h-divider{height:1px;background:rgba(255,255,255,.08);}
+
+  /* quick links */
+  .quick-link{
+    display:flex;align-items:center;gap:10px;
+    padding:12px 16px;border-radius:12px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.07);
+    color:#8fce8a;font-size:.82rem;font-weight:500;
+    text-decoration:none;
+    transition:background .18s,border-color .18s,color .18s,transform .15s;
+  }
+  .quick-link:hover{background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.25);color:#fbbf24;transform:translateX(4px);}
+  .quick-link svg{flex-shrink:0;color:rgba(143,206,138,.5);}
+  .quick-link:hover svg{color:#fbbf24;}
+
+  /* search input */
+  .search-input{
+    background:rgba(255,255,255,.06);
+    border:1.5px solid rgba(255,255,255,.12);
+    border-radius:12px;
+    padding:12px 16px 12px 44px;
+    color:#e0f2df;font-size:.85rem;width:100%;
+    transition:border-color .2s,background .2s,box-shadow .2s;
+  }
+  .search-input::placeholder{color:rgba(143,206,138,.4);}
+  .search-input:focus{outline:none;border-color:#fbbf24;background:rgba(255,255,255,.09);box-shadow:0 0 0 3px rgba(251,191,36,.15);}
+</style>
+</head>
+
+<body class="bg-forest-950 min-h-screen flex flex-col">
+
+<!-- ── AMBIENT ORBS ── -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+  <div class="orb1 absolute -top-40 -left-40 w-[560px] h-[560px] rounded-full bg-forest-700/20 blur-[100px]"></div>
+  <div class="orb2 absolute -bottom-20 -right-20 w-[480px] h-[480px] rounded-full bg-terra-800/15 blur-[90px]"></div>
+  <div class="orb3 absolute top-1/2 left-1/2 -translate-x-1/2 w-[340px] h-[340px] rounded-full bg-harvest-800/10 blur-[80px]"></div>
+</div>
+
+<!-- ── FLOATING LEAVES ── -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+  <span class="leaf absolute top-[12%] left-[8%]  text-4xl opacity-10 select-none">🌿</span>
+  <span class="leaf2 absolute top-[25%] right-[6%] text-3xl opacity-10 select-none">🍃</span>
+  <span class="leaf3 absolute bottom-[20%] left-[14%] text-2xl opacity-10 select-none">🌱</span>
+  <span class="leaf absolute bottom-[30%] right-[10%] text-5xl opacity-[.07] select-none" style="animation-delay:1s">🌿</span>
+</div>
+
+
+
+<!-- ── MAIN ── -->
+<main class="relative z-10 flex-1 flex items-center justify-center px-4 py-16">
+  <div class="w-full max-w-5xl mx-auto">
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+
+      <!-- LEFT — 404 visual -->
+      <div class="flex flex-col items-center lg:items-start text-center lg:text-left">
+
+        <!-- Big number -->
+        <div class="panel-in d1 relative mb-6 select-none">
+          <!-- seed particles -->
+          <span class="seed" style="left:20%;animation-delay:0s;"></span>
+          <span class="seed" style="left:50%;animation-delay:1.3s;background:#5cb356;"></span>
+          <span class="seed" style="left:75%;animation-delay:2.6s;background:#fbbf24;"></span>
+          <span class="seed" style="left:35%;animation-delay:.8s;background:#f97316;"></span>
+
+          <p class="glitch-wrap font-display font-black text-[9rem] sm:text-[12rem] leading-none text-forest-800/80"
+             data-text="404">
+            404
+          </p>
+        </div>
+        <!-- Status pill -->
+        <div class="panel-in d2 inline-flex items-center gap-2 bg-terra-500/15 border border-terra-500/30 text-terra-300 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-5">
+          <span class="w-1.5 h-1.5 bg-terra-400 rounded-full animate-pulse"></span>
+          Page Not Found
+        </div>
+        
+      </div>
+
+      <!-- RIGHT — search + quick links -->
+      <div class="space-y-6">
+
+        
+
+        <h1 class="panel-in d3 font-display text-3xl sm:text-4xl text-white font-bold leading-snug mb-4">
+          Oops! This field<br/>
+          <span class="text-harvest-400">is empty.</span>
+        </h1>
+
+        <p class="panel-in d4 text-forest-400 text-sm leading-relaxed max-w-md mb-8">
+          The page you're looking for has been moved, deleted, or never existed. It might have been harvested already - let's get you back to fresh ground.
+        </p>
+
+        <!-- CTA buttons -->
+        <div class="panel-in d5 flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+          <a href="/" class="btn-primary w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Go to Homepage
+          </a>
+        </div>
+
+        <!-- Error code caption -->
+        <p class="panel-in d6 text-forest-700 text-[10px] mt-6 font-mono">
+          Error Code: 404 · HTTP/1.1 · Not Found
+        </p>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ── FOOTER ── -->
+<footer class="relative z-10 border-t border-forest-800/40 px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+  <p class="text-forest-700 text-xs">© 2026 MPSAC by World Vision Development Foundation, Inc All rights reserved.</p>
+  <div class="flex items-center gap-4 text-forest-700 text-xs">
+    <a href="/privacy" class="hover:text-forest-400 transition">Privacy</a>
+    <a href="/terms"   class="hover:text-forest-400 transition">Terms</a>
+    <a href="/contact" class="hover:text-forest-400 transition">Help</a>
+  </div>
+</footer>
+
+</body>
+</html>

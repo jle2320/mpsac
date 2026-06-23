@@ -1,0 +1,70 @@
+ /* modal */
+.modal-backdrop{
+    position:fixed;
+    inset:0;
+    z-index:300;
+    background:rgba(8,22,9,.75);
+    backdrop-filter:blur(6px);
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:20px;
+    overflow-y:auto;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .25s;
+}
+.modal-backdrop.open{opacity:1;
+    pointer-events:all;
+}
+.modal-box{background:#1a4119;
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:20px;
+    width:100%;
+    max-width:680px;
+    box-shadow:0 32px 80px rgba(8,22,9,.55);
+    animation:modalIn .28s ease forwards;
+    margin:auto;
+}
+
+
+/* toast */
+#toast{
+  position:fixed;
+  top:80px;
+  right:24px;
+  z-index:500;
+  border-radius:14px;
+  padding:12px 16px;
+  box-shadow:0 8px 32px rgba(8,22,9,.4);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:.8rem;
+  color:#e0f2df;
+  transition:opacity .3s,transform .3s;
+  opacity:0;
+  transform:translateY(12px);
+  pointer-events:none;
+  max-width:300px;
+}
+#toast.show{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:all;
+}
+
+
+/***************************************
+=======================================
+          AVATAR CLASSES
+=======================================
+****************************************/
+.avatar-a{background:#fbbf24;color:#183d17;}
+.avatar-b{background:#f97316;color:#fff;}
+.avatar-c{background:#5cb356;color:#fff;}
+.avatar-d{background:#3b82f6;color:#fff;}
+.avatar-e{background:#a855f7;color:#fff;}
+.avatar-f{background:#ec4899;color:#fff;}
+.avatar-g{background:#06b6d4;color:#fff;}
+.avatar-h{background:#84cc16;color:#183d17;}

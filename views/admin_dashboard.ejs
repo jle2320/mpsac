@@ -1,0 +1,334 @@
+<%- include ('partials/top') %>
+
+    <!-- Welcome bar -->
+    <div class="fade-up d1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+      <div>
+        <h1 class="font-display text-2xl md:text-3xl text-white font-bold">Good morning, <span class="text-harvest-400">Admin</span> 🌾</h1>
+        <p class="text-forest-400 text-sm mt-0.5">Here's what's happening on AgroShop today.</p>
+      </div>
+    </div>
+
+    <!-- ── STAT CARDS ── -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+
+      <!-- Revenue -->
+      <div class="fade-up d2 glass rounded-2xl p-5 relative overflow-hidden">
+        <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-harvest-400/10 rounded-full blur-xl pointer-events-none"></div>
+        <div class="flex items-start justify-between mb-4">
+          <div class="w-10 h-10 bg-harvest-400/15 rounded-xl flex items-center justify-center">
+            <span class="text-harvest-400">₱</span>
+          </div>
+          <div class="up text-xs font-semibold flex items-center gap-0.5" id="yesterdayTodayRevenueGap"></div>
+        </div>
+        <p class="text-forest-400 text-xs mb-1">Today’s Revenue</p>
+        <p class="font-display text-2xl text-white font-bold" data-count="284750" id="todayStatRevenue">₱0</p>
+        <p class="text-forest-500 text-[10px] mt-1">vs yesterday revenue (<span id="yesterdayStatRevenue" >₱0</span>)</p>
+      </div>
+
+      <!-- Orders -->
+      <div class="fade-up d3 glass rounded-2xl p-5 relative overflow-hidden">
+        <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-terra-500/10 rounded-full blur-xl pointer-events-none"></div>
+        <div class="flex items-start justify-between mb-4">
+          <div class="w-10 h-10 bg-terra-500/15 rounded-xl flex items-center justify-center">
+            <svg class="w-5 h-5 text-terra-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+          </div>
+        </div>
+        <p class="text-forest-400 text-xs mb-1">Ongoing Orders</p>
+        <p class="font-display text-2xl text-white font-bold" data-count="4821" id="statOngoingOrders">0</p>
+        <p class="text-forest-500 text-[10px] mt-1" id="statPendingOrders">No Order</p>
+      </div>
+
+      <!-- Products -->
+      <div class="fade-up d4 glass rounded-2xl p-5 relative overflow-hidden">
+        <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-forest-400/10 rounded-full blur-xl pointer-events-none"></div>
+        <div class="flex items-start justify-between mb-4">
+          <div class="w-10 h-10 bg-forest-400/15 rounded-xl flex items-center justify-center">
+            <svg class="w-5 h-5 text-forest-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+          </div>
+        </div>
+        <p class="text-forest-400 text-xs mb-1">Total Products</p>
+        <p class="font-display text-2xl text-white font-bold" data-count="1248" id="statTotalProducts">0</p>
+        <p class="text-harvest-500 text-[10px] mt-1" id="statTotalLowStock">34 low in stock</p>
+      </div>
+
+      <!-- Farmers -->
+      <div class="fade-up d5 glass rounded-2xl p-5 relative overflow-hidden">
+        <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-harvest-600/10 rounded-full blur-xl pointer-events-none"></div>
+        <div class="flex items-start justify-between mb-4">
+          <div class="w-10 h-10 bg-harvest-600/15 rounded-xl flex items-center justify-center">
+            <svg class="w-5 h-5 text-harvest-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+        </div>
+        <p class="text-forest-400 text-xs mb-1">Registered Customers</p>
+        <p class="font-display text-2xl text-white font-bold" data-count="342" id="statTotalCustomer">0</p>
+        <p class="text-forest-500 text-[10px] mt-1" id="statTotalUnverifiedCustomer">12 pending approval</p>
+      </div>
+    </div>
+
+    <!-- ── CHARTS ROW ── -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-6">
+
+      <!-- Revenue Chart (wide) -->
+      <div class="fade-up d3 xl:col-span-2 glass rounded-2xl p-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+          <div>
+            <p class="text-forest-400 text-xs uppercase tracking-widest font-semibold mb-0.5">Revenue Overview</p>
+            <h3 class="font-display text-lg text-white font-bold">Monthly Sales Performance</h3>
+          </div>
+          <div class="flex gap-2">
+            <button class="chart-period text-xs px-3 py-1.5 rounded-lg bg-harvest-400/20 text-harvest-400 border border-harvest-400/30 transition font-medium" data-period="7d">
+                7D
+            </button>
+
+            <button class="chart-period text-xs px-3 py-1.5 rounded-lg bg-forest-800/60 text-forest-400 hover:text-harvest-300 transition font-medium" data-period="4w">
+                4W
+            </button>
+
+            <button class="chart-period text-xs px-3 py-1.5 rounded-lg bg-forest-800/60 text-forest-400 hover:text-harvest-300 transition font-medium" data-period="12m">
+                12M
+            </button>
+        </div>
+        </div>
+        <div class="chart-wrap" style="height:220px;">
+          <canvas id="revenueChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+        <div class="fade-up d7 glass rounded-2xl p-5">
+          <p class="text-forest-400 text-xs uppercase tracking-widest font-semibold mb-4">Quick Actions</p>
+          <div class="grid grid-cols-2 gap-2">
+            <a href="/a/products/new" class="flex flex-col items-center gap-2 bg-forest-800/60 hover:bg-forest-700/50 border border-forest-700/30 rounded-xl p-3 transition text-center group">
+              <div class="w-8 h-8 rounded-lg bg-harvest-400/15 flex items-center justify-center group-hover:bg-harvest-400/25 transition">
+                <svg class="w-4 h-4 text-harvest-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+              <span class="text-forest-300 text-[11px] font-medium leading-tight">Add Product</span>
+            </a>
+            <button class="flex flex-col items-center gap-2 bg-forest-800/60 hover:bg-forest-700/50 border border-forest-700/30 rounded-xl p-3 transition text-center group">
+              <div class="w-8 h-8 rounded-lg bg-terra-500/15 flex items-center justify-center group-hover:bg-terra-500/25 transition">
+                <svg class="w-4 h-4 text-terra-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+              </div>
+              <span class="text-forest-300 text-[11px] font-medium leading-tight">New Order</span>
+            </button>
+            <button class="flex flex-col items-center gap-2 bg-forest-800/60 hover:bg-forest-700/50 border border-forest-700/30 rounded-xl p-3 transition text-center group">
+              <div class="w-8 h-8 rounded-lg bg-forest-500/15 flex items-center justify-center group-hover:bg-forest-500/25 transition">
+                <svg class="w-4 h-4 text-forest-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <span class="text-forest-300 text-[11px] font-medium leading-tight">Add Rider</span>
+            </button>
+            <button class="flex flex-col items-center gap-2 bg-forest-800/60 hover:bg-forest-700/50 border border-forest-700/30 rounded-xl p-3 transition text-center group">
+              <div class="w-8 h-8 rounded-lg bg-harvest-600/15 flex items-center justify-center group-hover:bg-harvest-600/25 transition">
+                <svg class="w-4 h-4 text-harvest-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              </div>
+              <span class="text-forest-300 text-[11px] font-medium leading-tight">View Report</span>
+            </button>
+          </div>
+        </div>
+    </div>
+
+    <!-- ── BOTTOM ROW ── -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-6">
+
+      <!-- Recent Orders Table -->
+      <div class="fade-up d5 xl:col-span-2 glass rounded-2xl p-5 overflow-hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+          <div>
+            <p class="text-forest-400 text-xs uppercase tracking-widest font-semibold mb-0.5">Latest Activity</p>
+            <h3 class="font-display text-lg text-white font-bold">Pending Orders</h3>
+          </div>
+          <a href="/a/orders" class="text-harvest-400 hover:text-harvest-300 transition text-xs font-medium flex items-center gap-1">View all <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></a>
+        </div>
+        <div class="overflow-x-auto -mx-1">
+          <table class="w-full text-sm min-w-[520px]">
+            <thead>
+              <tr class="border-b border-forest-800/60">
+                <th class="text-left text-forest-500 text-xs font-semibold uppercase tracking-wider pb-3 px-1">Order ID</th>
+                <th class="text-left text-forest-500 text-xs font-semibold uppercase tracking-wider pb-3 px-1">Customer</th>
+                <th class="text-left text-forest-500 text-xs font-semibold uppercase tracking-wider pb-3 px-1 hidden sm:table-cell">Items</th>
+                <th class="text-left text-forest-500 text-xs font-semibold uppercase tracking-wider pb-3 px-1">Amount</th>
+                <th class="text-left text-forest-500 text-xs font-semibold uppercase tracking-wider pb-3 px-1">Date</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyPendingOrderTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right column: top products + quick actions -->
+      <div class="flex flex-col gap-4">
+
+        <!-- Inventory Alerts -->
+        <div class="fade-up d6 glass rounded-2xl p-5">
+          
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <p class="text-forest-400 text-xs uppercase tracking-widest font-semibold mb-0.5">Inventory</p>
+              <h3 class="font-display text-base text-white font-bold">Low Stock Alerts</h3>
+            </div>
+            <span class="bg-terra-500/20 text-terra-400 text-xs font-bold px-2 py-1 rounded-full" id="totalLowStock">34 items</span>
+          </div>
+
+          <div class="space-y-3" id="lowStockCTX"></div>
+            <a href='/a/inventory' class="mt-4 w-full text-xs text-forest-400 hover:text-harvest-300 transition font-medium">View inventory →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EXTRA ROW: Inventory Alerts + Activity Feed ── -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+
+      
+
+
+      <!-- System Status -->
+      <div class="fade-up d8 glass rounded-2xl p-5">
+        <div class="mb-4">
+          <p class="text-forest-400 text-xs uppercase tracking-widest font-semibold mb-0.5">Stock Movement</p>
+          <h3 class="font-display text-base text-white font-bold">Recent Stock Changes</h3>
+        </div>
+        <div class="space-y-4" id="recentMovementStockCTX"></div>
+        <button class="mt-4 w-full text-xs text-forest-400 hover:text-harvest-300 transition font-medium">View all stock movement →</button>
+      </div>
+
+
+
+
+
+
+
+      <!-- Activity Feed -->
+      <div class="fade-up d7 glass rounded-2xl p-5">
+        <div class="mb-4">
+          <p class="text-forest-400 text-xs uppercase tracking-widest font-semibold mb-0.5">Timeline</p>
+          <h3 class="font-display text-base text-white font-bold">Recent Activity</h3>
+        </div>
+        <div class="space-y-4">
+          <div class="flex gap-3">
+            <div class="flex flex-col items-center">
+              <div class="w-7 h-7 rounded-full bg-forest-500/20 flex items-center justify-center shrink-0">
+                <svg class="w-3.5 h-3.5 text-forest-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+              </div>
+              <div class="w-px flex-1 bg-forest-800/60 mt-1"></div>
+            </div>
+            <div class="pb-4">
+              <p class="text-forest-200 text-xs font-medium">New order <span class="text-harvest-400">#ORD-8841</span> placed</p>
+              <p class="text-forest-500 text-[10px] mt-0.5">2 minutes ago</p>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <div class="flex flex-col items-center">
+              <div class="w-7 h-7 rounded-full bg-harvest-500/20 flex items-center justify-center shrink-0">
+                <svg class="w-3.5 h-3.5 text-harvest-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              </div>
+              <div class="w-px flex-1 bg-forest-800/60 mt-1"></div>
+            </div>
+            <div class="pb-4">
+              <p class="text-forest-200 text-xs font-medium">New farmer <span class="text-harvest-400">Pedro V.</span> registered</p>
+              <p class="text-forest-500 text-[10px] mt-0.5">14 minutes ago</p>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <div class="flex flex-col items-center">
+              <div class="w-7 h-7 rounded-full bg-terra-500/20 flex items-center justify-center shrink-0">
+                <svg class="w-3.5 h-3.5 text-terra-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+              </div>
+              <div class="w-px flex-1 bg-forest-800/60 mt-1"></div>
+            </div>
+            <div class="pb-4">
+              <p class="text-forest-200 text-xs font-medium"><span class="text-harvest-400">Sweet Potato</span> stock updated to 240 units</p>
+              <p class="text-forest-500 text-[10px] mt-0.5">1 hour ago</p>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <div class="flex flex-col items-center">
+              <div class="w-7 h-7 rounded-full bg-forest-600/20 flex items-center justify-center shrink-0">
+                <svg class="w-3.5 h-3.5 text-forest-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              </div>
+            </div>
+            <div>
+              <p class="text-forest-200 text-xs font-medium">Order <span class="text-harvest-400">#ORD-8830</span> marked delivered</p>
+              <p class="text-forest-500 text-[10px] mt-0.5">3 hours ago</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Status -->
+      <div class="fade-up d8 glass rounded-2xl p-5">
+        <div class="mb-4">
+          <p class="text-forest-400 text-xs uppercase tracking-widest font-semibold mb-0.5">Infrastructure</p>
+          <h3 class="font-display text-base text-white font-bold">System Status</h3>
+        </div>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-forest-200 text-xs font-medium">Web Server</p>
+              <p class="text-forest-500 text-[10px]">99.98% uptime</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 bg-forest-400 rounded-full animate-pulse"></span>
+              <span class="text-forest-400 text-xs font-medium">Online</span>
+            </div>
+          </div>
+          <div class="h-px bg-forest-800/50"></div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-forest-200 text-xs font-medium">Database</p>
+              <p class="text-forest-500 text-[10px]">12ms response</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 bg-forest-400 rounded-full animate-pulse"></span>
+              <span class="text-forest-400 text-xs font-medium">Healthy</span>
+            </div>
+          </div>
+          <div class="h-px bg-forest-800/50"></div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-forest-200 text-xs font-medium">Payment Gateway</p>
+              <p class="text-forest-500 text-[10px]">GCash · Maya</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 bg-forest-400 rounded-full animate-pulse"></span>
+              <span class="text-forest-400 text-xs font-medium">Active</span>
+            </div>
+          </div>
+          <div class="h-px bg-forest-800/50"></div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-forest-200 text-xs font-medium">SMS Notifications</p>
+              <p class="text-forest-500 text-[10px]">Semaphore API</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 bg-harvest-400 rounded-full"></span>
+              <span class="text-harvest-400 text-xs font-medium">Degraded</span>
+            </div>
+          </div>
+          <div class="h-px bg-forest-800/50"></div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-forest-200 text-xs font-medium">CDN / Assets</p>
+              <p class="text-forest-500 text-[10px]">Cloudflare</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 bg-forest-400 rounded-full animate-pulse"></span>
+              <span class="text-forest-400 text-xs font-medium">Online</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Maintenance toggle -->
+        <div class="mt-5 p-3 bg-forest-800/40 rounded-xl flex items-center justify-between">
+          <div>
+            <p class="text-forest-200 text-xs font-medium">Maintenance Mode</p>
+            <p class="text-forest-500 text-[10px]">Disable public access</p>
+          </div>
+          <div class="toggle-track" id="maintToggle" onclick="this.classList.toggle('on')">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<script src="/js/main_app.js" defer ></script>
+<script src="/js/admin_dashboard_app.js" defer ></script>
+<%- include ('partials/bottom') %>

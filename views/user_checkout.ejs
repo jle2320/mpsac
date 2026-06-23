@@ -1,0 +1,124 @@
+<%- include ('partials/user_top') %>
+
+<section class="max-w-7xl mx-auto px-6 py-14">
+  <div class="mb-8">
+    <h1 class="font-display text-4xl text-forest-900">Checkout</h1>
+    <p class="text-forest-500 font-body">Check your cart</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" id="cart-section">
+    
+    <div class="lg:col-span-2 space-y-4" id="cart-items-container"></div>
+    
+    
+    <div class="lg:col-span-1">
+      <div class="mb-5" >
+        <% if (userData) { %>
+
+          <% const defaultAddress = userData.deliveryAddress?.find(addr => addr.addressDefault == 'true'); %>
+
+          <% if (defaultAddress) { %>
+
+            <div class="address-card border-2 border-forest-500 rounded-3xl p-4 bg-forest-50/50 relative">
+
+              <div class="absolute top-3 right-3 bg-forest-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                Default
+              </div>
+
+              <div class="flex items-start gap-3 mb-3">
+                <div class="w-8 h-8 bg-forest-100 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                  <svg class="w-4 h-4 text-forest-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                  </svg>
+                </div>
+
+                <div>
+                  <p class="text-forest-800 font-semibold text-sm">
+                    <%= defaultAddress.addressLabel %>
+                  </p>
+
+                  <p class="text-forest-600 text-xs mt-0.5">
+                    <%= defaultAddress.contactPerson %>
+                  </p>
+
+                  <p class="text-forest-500 text-xs">
+                    <%= defaultAddress.contactNumber %>
+                  </p>
+                </div>
+              </div>
+
+              <p class="text-forest-700 text-xs leading-relaxed mb-3">
+                <%= defaultAddress.addressStreet %>,
+                <%= defaultAddress.addressBarangay %>,
+                <%= defaultAddress.addressCity %>,
+                <%= defaultAddress.addressProvince %>
+              </p>
+
+              <p class="text-forest-700 text-xs leading-relaxed mb-3">
+                Landmark: <%= defaultAddress.addressLandmark %>
+              </p>
+            </div>
+            <input type="hidden" id="deliveryAddressPerson" value="<%= defaultAddress.contactPerson %>" >
+            <input type="hidden" id="deliveryAddressNumber" value="<%= defaultAddress.contactNumber %>" >
+            <input type="hidden" id="deliveryAddressStreet" value="<%= defaultAddress.addressStreet %>" >
+            <input type="hidden" id="deliveryAddressBarangay" value="<%= defaultAddress.addressBarangay %>" >
+            <input type="hidden" id="deliveryAddressCity" value="<%= defaultAddress.addressCity %>" >
+            <input type="hidden" id="deliveryAddressProvince" value="<%= defaultAddress.addressProvince %>" >
+            <input type="hidden" id="deliveryAddressLandmark" value="<%= defaultAddress.addressLandmark %>" >
+
+          <% } else { %>
+
+            <p>
+              No default address selected. Click
+              <a class="text-harvest-300" href="/account#addresses">here</a>
+              to update it.
+            </p>
+
+          <% } %>
+
+        <% } %>
+      </div>
+
+      <div class="bg-forest-900 text-white rounded-3xl p-6 shadow-xl">
+        <div class="flex justify-between text-forest-200">
+          <div class="flex flex-col" >
+              <p class="text-forest-200">
+                <span class="text-sm form-label">Payment Method <span class="req">*</span></span>
+                <select class='form-input' id="payment-method">
+                  <option value="" selected disabled >Payment Method</option>
+                  <option value="Cash on Delivery" >Cash on Delivery</option>
+                  <option value="Gcash" disabled >Gcash</option>
+                </select>
+              </p>
+          </div>
+
+          <div>
+            <p class="flex justify-between mb-2">Subtotal <span id="cart-total-price" class="font-bold text-harvest-500">₱0</span></p>
+            <p class="flex justify-between mb-2">Shipping <span class="font-bold text-harvest-500">₱0.00</span></p>
+            <p class="flex justify-between mb-5">Total <span id="total-price" class="font-bold text-harvest-500">₱0</span></p>
+            <% if (userData) { %>
+              <% const defaultAddress = userData.deliveryAddress?.find(addr => addr.addressDefault == 'true'); %>
+              <% if (defaultAddress) { %>
+                <button id='place-order' class="w-full bg-harvest-500 hover:bg-harvest-400 text-forest-900 font-bold py-4 px-3 rounded-xl transition shadow-lg shadow-harvest-900/20 flex items-center justify-center gap-2">
+                  Place Order
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+              <% } %>
+            <% } %>
+          </div>
+        </div>
+        
+        <div class="mt-4 flex items-center justify-center gap-2 text-forest-400 text-xs uppercase tracking-widest font-bold">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+          Secure Payment
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script src="/js/main_app.js" defer ></script>
+<script src="/js/user_checkout_app.js" defer ></script>
+<%- include ('partials/user_bottom') %>

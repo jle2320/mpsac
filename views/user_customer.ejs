@@ -1,0 +1,233 @@
+<%- include ('partials/top') %>
+
+<style>
+  *{font-family:'DM Sans',sans-serif;box-sizing:border-box;}
+  h1,h2,h3,.font-display{font-family:'Playfair Display',serif;}
+
+  /* grain overlay */
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.45;}
+
+  ::-webkit-scrollbar{width:5px;height:5px;}
+  ::-webkit-scrollbar-track{background:#0e2410;}
+  ::-webkit-scrollbar-thumb{background:#2d7429;border-radius:4px;}
+
+  /* sidebar */
+  #sidebar{transition:transform .3s cubic-bezier(.22,1,.36,1),width .3s cubic-bezier(.22,1,.36,1);}
+  #sidebar.collapsed{width:72px;}
+  #sidebar.collapsed .sidebar-label,
+  #sidebar.collapsed .sidebar-logo-text,
+  #sidebar.collapsed .sidebar-group-label,
+  #sidebar.collapsed .sidebar-badge{display:none;}
+  #sidebarOverlay{transition:opacity .3s;}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  @keyframes pulse2{0%,100%{opacity:1;}50%{opacity:.5;}}
+  @keyframes slideInRight{from{opacity:0;transform:translateX(18px);}to{opacity:1;transform:translateX(0);}}
+  @keyframes modalIn{from{opacity:0;transform:translateY(24px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .fade-up{animation:fadeUp .5s ease forwards;}
+  .d1{animation-delay:.05s;opacity:0;}.d2{animation-delay:.10s;opacity:0;}
+  .d3{animation-delay:.15s;opacity:0;}.d4{animation-delay:.20s;opacity:0;}
+  .d5{animation-delay:.25s;opacity:0;}.d6{animation-delay:.30s;opacity:0;}
+
+  /* glass */
+  .glass{background:rgba(31,75,29,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.07);}
+
+  /* nav */
+  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:12px;color:#8fce8a;font-size:.825rem;font-weight:500;cursor:pointer;transition:background .18s,color .18s;white-space:nowrap;text-decoration:none;}
+  .nav-item:hover{background:rgba(255,255,255,.07);color:#fbbf24;}
+  .nav-item.active{background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.25);}
+  .nav-item svg{flex-shrink:0;}
+
+  /* table */
+  .trow{transition:background .15s;cursor:pointer;}
+  .trow:hover{background:rgba(251,191,36,.05);}
+  .trow.selected{background:rgba(251,191,36,.08);}
+
+  /* status tab */
+  .status-tab{padding:8px 16px;border-radius:10px;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .18s,color .18s;border:1px solid transparent;}
+  .status-tab.active{background:rgba(251,191,36,.18);color:#fbbf24;border-color:rgba(251,191,36,.3);}
+  .status-tab:not(.active){color:#5cb356;}
+  .status-tab:not(.active):hover{background:rgba(255,255,255,.06);color:#fbbf24;}
+
+  /* notification dot */
+  .notif-dot{width:8px;height:8px;background:#f97316;border-radius:50%;position:absolute;top:6px;right:6px;animation:pulse2 2s infinite;}
+
+  /* modal */
+  .modal-backdrop{position:fixed;inset:0;z-index:300;background:rgba(8,22,9,.75);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .25s;}
+  .modal-backdrop.open{opacity:1;pointer-events:all;}
+  .modal-box{background:#1a4119;border:1px solid rgba(255,255,255,.09);border-radius:20px;width:100%;max-width:680px;box-shadow:0 32px 80px rgba(8,22,9,.55);animation:modalIn .28s ease forwards;margin:auto;}
+
+  /* order row slide-in on tab switch */
+  .trow-appear{animation:slideInRight .22s ease forwards;}
+
+  /* pill badge */
+  .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:.65rem;font-weight:700;letter-spacing:.02em;}
+
+  /* timeline */
+  .tl-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .tl-line{width:2px;flex:1;min-height:20px;}
+
+  /* progress fill */
+  .prog-fill{transition:width 1s cubic-bezier(.22,1,.36,1);}
+
+  /* spinner */
+  .spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block;}
+
+  /* search input */
+  .search-input{background:rgba(31,75,29,.5);border:1px solid rgba(92,179,86,.2);border-radius:12px;padding:9px 14px 9px 36px;font-size:.8rem;color:#e0f2df;width:100%;transition:border-color .2s;}
+  .search-input::placeholder{color:#3a9134;}
+  .search-input:focus{outline:none;border-color:rgba(251,191,36,.4);}
+
+  /* select */
+  .filter-select{background:rgba(31,75,29,.5);border:1px solid rgba(92,179,86,.2);border-radius:10px;padding:8px 12px;font-size:.78rem;color:#8fce8a;cursor:pointer;transition:border-color .2s;}
+  .filter-select:focus{outline:none;border-color:rgba(251,191,36,.4);}
+  .filter-select option{background:#1a4119;}
+
+  /* toast */
+  #toast{position:fixed;bottom:24px;right:24px;z-index:500;background:#1f4b1d;border:1px solid rgba(92,179,86,.3);border-radius:14px;padding:12px 16px;box-shadow:0 8px 32px rgba(8,22,9,.4);display:flex;align-items:center;gap:10px;font-size:.8rem;color:#e0f2df;transition:opacity .3s,transform .3s;opacity:0;transform:translateY(12px);pointer-events:none;max-width:300px;}
+  #toast.show{opacity:1;transform:translateY(0);pointer-events:all;}
+
+  /* responsive sidebar */
+  @media(max-width:1023px){
+    #sidebar{position:fixed;top:0;left:0;height:100vh;z-index:200;transform:translateX(-100%);width:260px !important;}
+    #sidebar.mobile-open{transform:translateX(0);}
+    #sidebarOverlay{display:block;}
+    #mainContent{margin-left:0 !important;}
+  }
+  @media(min-width:1024px){
+    #sidebarOverlay{display:none !important;}
+  }
+
+  /* mobile table: hide low-priority cols */
+  @media(max-width:640px){
+    .col-date,.col-payment,.col-farmer{display:none;}
+  }
+  @media(max-width:480px){
+    .col-items{display:none;}
+  }
+</style>
+
+<!-- Page title row -->
+    <div class="fade-up d1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+      <div>
+        <h1 class="font-display text-2xl md:text-3xl text-white font-bold">Order <span class="text-harvest-400">Management</span></h1>
+        <p class="text-forest-400 text-sm mt-0.5">Track, manage, and update all customer orders.</p>
+      </div>
+      <div class="flex gap-2">
+        <button id="exportBtn" class="flex items-center gap-1.5 bg-forest-800/60 hover:bg-forest-700/60 border border-forest-700/40 text-forest-300 text-xs font-medium px-3.5 py-2 rounded-xl transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+        <button id="printBtn" class="flex items-center gap-1.5 bg-harvest-400 hover:bg-harvest-300 text-forest-900 text-xs font-bold px-3.5 py-2 rounded-xl transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print
+        </button>
+      </div>
+    </div>
+
+    
+
+    <!-- ORDERS TABLE CARD -->
+    <div class="fade-up d5 glass rounded-2xl overflow-hidden">
+
+      <!-- Table toolbar -->
+      <div class="p-4 md:p-5 border-b border-forest-800/50">
+        <div class="flex flex-col gap-4">
+
+          <!-- Status tabs -->
+          <div class="flex gap-2 overflow-x-auto pb-1 -mb-1" id="statusTabs">
+            <button class="relative status-tab active" data-tab="all">All 
+              <span id="count-all" style="top:1px;" class="absolute -right-1.5 bg-terra-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
+            </button>
+            <button class="relative status-tab" data-tab="pending">
+              ⏳ Pending
+              <span id="count-pending" style="top:1px;" class="absolute -right-1.5 bg-terra-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
+            </button>
+            <button class="relative status-tab" data-tab="to-ship">📦 To Ship
+              <span id="count-to-ship" style="top:1px;" class="absolute -right-1.5 bg-terra-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">3</span>
+            </button>
+            <button class="relative status-tab" data-tab="to-receive">🚚 To Receive
+              <span id="count-to-receive" style="top:1px;" class="absolute -right-1.5 bg-terra-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
+            </button>
+            <button class="relative status-tab" data-tab="completed">✅ Completed
+              <span id="count-completed" style="top:1px;" class="absolute -right-1.5 bg-terra-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
+            </button>
+            <button class="relative status-tab" data-tab="cancelled">❌ Cancelled
+              <span id="count-cancelled" style="top:1px;" class="absolute -right-1.5 bg-terra-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
+            </button>
+            <button class="relative status-tab" data-tab="refund">🔄 Return/Refund
+              <span id="count-refund" style="top:1px;" class="absolute -right-1.5 bg-terra-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span></button>
+          </div>
+
+          <!-- Filters row -->
+          <div class="flex flex-col sm:flex-row gap-3">
+            <div class="relative flex-1 max-w-sm">
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-forest-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input id="tableSearch" type="text" placeholder="Search order ID, customer, product…" class="search-input"/>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <select id="filterDate" class="filter-select">
+                <option value="">All Dates</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+              </select>
+              <select id="filterPayment" class="filter-select">
+                <option value="">All Payments</option>
+                <option value="GCash">GCash</option>
+                <option value="Maya">Maya</option>
+                <option value="COD">COD</option>
+              </select>
+              <select id="filterSort" class="filter-select">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="amount-high">Amount: High–Low</option>
+                <option value="amount-low">Amount: Low–High</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm min-w-[700px]" id="ordersTable">
+          <thead>
+            <tr class="border-b border-forest-800/60 bg-forest-900/30">
+              <th class="text-left text-forest-500 text-[10px] font-bold uppercase tracking-wider py-3.5 px-4">Order ID</th>
+              <th class="text-left text-forest-500 text-[10px] font-bold uppercase tracking-wider py-3.5 px-3">Customer</th>
+              <th class="text-left text-forest-500 text-[10px] font-bold uppercase tracking-wider py-3.5 px-3 col-items">Items</th>
+              <th class="text-left text-forest-500 text-[10px] font-bold uppercase tracking-wider py-3.5 px-3 col-date">Date</th>
+              <th class="text-left text-forest-500 text-[10px] font-bold uppercase tracking-wider py-3.5 px-3 col-payment">Payment</th>
+              <th class="text-right text-forest-500 text-[10px] font-bold uppercase tracking-wider py-3.5 px-3">Amount</th>
+              <th class="text-left text-forest-500 text-[10px] font-bold uppercase tracking-wider py-3.5 px-4">Status</th>
+            </tr>
+          </thead>
+          <tbody id="ordersBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="px-4 md:px-5 py-4 border-t border-forest-800/40 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <p class="text-forest-500 text-xs" id="paginationInfo">Showing 1–10 of 47</p>
+        <div class="flex items-center gap-1.5" id="paginationBtns"></div>
+      </div>
+    </div>
+<!-- ════════════════════ TOAST ════════════════════ -->
+<div id="toast">
+  <svg id="toast-icon" class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+  <span id="toast-msg">Done</span>
+</div>
+
+<!-- ════════════════════ MODAL ════════════════════ -->
+<div id="orderModal" class="modal-backdrop" role="dialog" aria-modal="true">
+  <div class="modal-box" id="modalBox">
+    <div id="modalContent"></div>
+  </div>
+</div>
+<script src="/js/admin_order_app.js" defer ></script>
+
+<%- include ('partials/bottom') %>

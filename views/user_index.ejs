@@ -1,0 +1,583 @@
+<%- include ('partials/user_top') %>
+
+
+
+
+<style>
+  /* ── Product Card ── */
+.product-card { position: relative; cursor: pointer; }
+
+/* Image area */
+.pc-image-wrap {
+  position: relative;
+  height: 200px;
+  background: #f2f9f2;
+  overflow: hidden;
+}
+.pc-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .45s cubic-bezier(.25,.46,.45,.94);
+}
+.product-card:hover .pc-img { transform: scale(1.06); }
+
+.pc-img-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  background: #e0f2df;
+}
+
+/* New badge (your existing newTag already positions top-right) */
+.pc-sale-badge {
+  position: absolute; top: 3px; left: 12px;
+  background: #d97706; color: #fff;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .07em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 20px;
+}
+
+/* Hover overlay with view button */
+.pc-hover-overlay {
+  position: absolute; inset: 0;
+  background: rgba(15,40,14,.45);
+  backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+.product-card:hover .pc-hover-overlay { opacity: 1; }
+
+.pc-view-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #fff; color: #255e22;
+  border: none; border-radius: 50px;
+  padding: 10px 22px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(8,22,9,.25);
+  transform: translateY(6px);
+  transition: transform .3s ease, background .2s;
+}
+.product-card:hover .pc-view-btn { transform: translateY(0); }
+.pc-view-btn:hover { background: #f2f9f2; }
+
+/* Body */
+.pc-body { padding: 16px 18px 18px; }
+
+.pc-meta {
+  display: flex; align-items: center; gap: 4px;
+  margin-bottom: 6px;
+}
+.pc-category {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: .07em; text-transform: uppercase;
+  color: #3a9134;
+}
+.pc-sub { font-size: 11px; color: #8fce8a; }
+
+.pc-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px; color: #1f4b1d;
+  line-height: 1.25; margin-bottom: 10px;
+}
+
+/* Variant pills */
+.pc-pills-row {
+  display: flex; flex-wrap: wrap; gap: 5px;
+  margin-bottom: 14px;
+}
+.pc-pill {
+  font-size: 11px; font-weight: 500;
+  padding: 3px 10px; border-radius: 20px;
+  background: #e0f2df; color: #255e22;
+  border: 1px solid #bde4ba;
+}
+.pc-pill-more {
+  background: #fff; color: #8fce8a;
+  border-color: #bde4ba;
+}
+
+/* Footer */
+.pc-footer {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 8px;
+}
+.pc-price {
+  font-size: 17px; font-weight: 700;
+  color: #1f4b1d;
+  font-family: 'DM Sans', sans-serif;
+}
+.pc-sale-note {
+  font-size: 11px; color: #d97706;
+  margin-top: 2px;
+}
+.pc-stock {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 11.5px; font-weight: 500; color: #5cb356;
+  background: #e0f2df; border-radius: 20px;
+  padding: 4px 10px; white-space: nowrap;
+}
+.pc-stock-low { color: #c2410c; background: #ffedd5; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ── Product Modal ── */
+.pm-wrap { display: flex; flex-direction: column; }
+
+.pm-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 26px 26px 0; gap: 16px;
+}
+.pm-header-left { flex: 1; min-width: 0; }
+.pm-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(20px, 4vw, 28px);
+  color: #e0f2df; line-height: 1.2;
+}
+.pm-sku { margin-top: 4px; font-size: 11.5px; color: #5cb356; letter-spacing: .08em; text-transform: uppercase; }
+.pm-close {
+  flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+  color: #bde4ba; font-size: 18px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background .2s, color .2s;
+}
+.pm-close:hover { background: rgba(255,255,255,.15); color: #fff; }
+
+/* Badges */
+.pm-badges { display: flex; flex-wrap: wrap; gap: 7px; padding: 14px 26px 0; }
+.pm-badge {
+  display: inline-flex; align-items: center; padding: 3px 11px;
+  border-radius: 20px; font-size: 11.5px; font-weight: 500; letter-spacing: .04em;
+}
+.pm-badge-green  { background: rgba(90,179,86,.18); color: #8fce8a; border: 1px solid rgba(90,179,86,.25); }
+.pm-badge-yellow { background: rgba(251,191,36,.14); color: #fcd34d; border: 1px solid rgba(251,191,36,.22); }
+.pm-badge-gray   { background: rgba(255,255,255,.07); color: #a1c9a0; border: 1px solid rgba(255,255,255,.1); }
+.pm-badge-orange { background: rgba(249,115,22,.16); color: #fdba74; border: 1px solid rgba(249,115,22,.22); }
+
+/* Images */
+.pm-images {
+  display: flex; gap: 10px; padding: 18px 26px;
+  overflow-x: auto; scrollbar-width: thin; scrollbar-color: #3a9134 transparent;
+}
+.pm-images::-webkit-scrollbar { height: 4px; }
+.pm-images::-webkit-scrollbar-thumb { background: #3a9134; border-radius: 4px; }
+.pm-img-thumb {
+  flex-shrink: 0; width: 100px; height: 82px; border-radius: 12px;
+  border: 2px solid rgba(255,255,255,.08); background: rgba(255,255,255,.04);
+  overflow: hidden; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: border-color .2s;
+}
+.pm-img-thumb.active { border-color: #5cb356; }
+.pm-img-thumb:hover  { border-color: rgba(90,179,86,.5); }
+.pm-img-thumb img    { width: 100%; height: 100%; object-fit: cover; }
+
+/* Divider */
+.pm-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.08) 30%, rgba(255,255,255,.08) 70%, transparent);
+  margin: 0 26px;
+}
+
+/* Description */
+.pm-desc {
+  padding: 16px 26px; font-size: 13px; line-height: 1.7; color: #8fce8a;
+}
+.pm-desc * { color: #8fce8a !important; font-family: 'DM Sans', sans-serif !important; font-size: 13px !important; }
+
+/* Section labels */
+.pm-section { padding: 18px 26px 10px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #5cb356; font-weight: 600; }
+
+/* Variant selector */
+.pm-variants-row { display: flex; flex-wrap: wrap; gap: 9px; padding: 0 26px 18px; }
+.pm-variant-btn {
+  display: flex; flex-direction: column; align-items: flex-start;
+  padding: 10px 16px; border-radius: 12px; cursor: pointer;
+  border: 1.5px solid rgba(255,255,255,.1); background: rgba(255,255,255,.04);
+  transition: all .18s; text-align: left;
+}
+.pm-variant-btn:hover { border-color: rgba(90,179,86,.45); background: rgba(90,179,86,.06); }
+.pm-variant-btn.selected {
+  border-color: #5cb356; background: rgba(90,179,86,.14);
+  box-shadow: 0 0 0 3px rgba(90,179,86,.12);
+}
+.pm-variant-btn.out-of-stock { opacity: .4; cursor: not-allowed; }
+.pv-name  { font-size: 13.5px; font-weight: 600; color: #e0f2df; }
+.pv-price { font-size: 12px; color: #5cb356; margin-top: 2px; }
+.pv-stock { font-size: 11px; color: #8fce8a; margin-top: 1px; }
+
+/* Selected variant info panel */
+.pm-variant-info {
+  margin: 0 26px 18px; padding: 14px 16px; border-radius: 14px;
+  background: rgba(90,179,86,.07); border: 1px solid rgba(90,179,86,.18);
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px;
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+.pvi-item { display: flex; flex-direction: column; gap: 2px; }
+.pvi-label { font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase; color: #5cb356; }
+.pvi-value { font-size: 13px; color: #e0f2df; font-weight: 500; }
+.pvi-value.sale { color: #fcd34d; }
+
+/* Add to cart zone */
+.pm-cart-zone { padding: 0 26px 22px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.pm-qty-wrap {
+  display: flex; align-items: center; border-radius: 12px;
+  border: 1.5px solid rgba(255,255,255,.12); overflow: hidden;
+  background: rgba(255,255,255,.04);
+}
+.pm-qty-btn {
+  width: 38px; height: 42px; display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none; color: #8fce8a; font-size: 18px;
+  cursor: pointer; transition: background .15s;
+}
+.pm-qty-btn:hover { background: rgba(255,255,255,.07); }
+.pm-qty-input {
+  width: 46px; height: 42px; background: transparent; border: none;
+  text-align: center; color: #e0f2df; font-size: 15px; font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+}
+.pm-qty-input::-webkit-inner-spin-button { display: none; }
+
+.pm-add-btn {
+  flex: 1; min-width: 150px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg, #3a9134, #2d7429);
+  border: none; color: #fff; font-size: 14px; font-weight: 600;
+  font-family: 'DM Sans', sans-serif; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: opacity .2s, transform .1s, box-shadow .2s;
+  box-shadow: 0 4px 16px rgba(58,145,52,.35);
+}
+.pm-add-btn:hover:not(:disabled) { opacity: .92; box-shadow: 0 6px 22px rgba(58,145,52,.45); }
+.pm-add-btn:active:not(:disabled) { transform: scale(.98); }
+.pm-add-btn:disabled { opacity: .35; cursor: not-allowed; box-shadow: none; }
+.pm-add-btn.success { background: linear-gradient(135deg, #255e22, #1f4b1d); }
+
+.pm-select-hint {
+  width: 100%; font-size: 12px; color: #5cb356; opacity: .7; text-align: center; padding-top: 2px;
+}
+
+/* Footer timestamps */
+.pm-footer {
+  padding: 14px 26px; border-top: 1px solid rgba(255,255,255,.06);
+  display: flex; flex-wrap: wrap; gap: 10px 24px;
+}
+.pm-ts { font-size: 11.5px; color: #5cb356; }
+.pm-ts span { color: #8fce8a; margin-left: 4px; }
+
+/* Responsive */
+@media (max-width: 480px) {
+  .pm-header, .pm-badges, .pm-images, .pm-desc,
+  .pm-section, .pm-variants-row, .pm-variant-info,
+  .pm-cart-zone, .pm-footer { padding-left: 16px; padding-right: 16px; }
+  .pm-divider { margin: 0 16px; }
+  .pm-variant-info { grid-template-columns: repeat(2, 1fr); }
+  .pm-variant-btn { padding: 9px 13px; }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</style>
+
+
+
+
+<!-- ═══════════════════════════════════════════
+     HERO SECTION
+════════════════════════════════════════════ -->
+<section class="relative min-h-screen flex items-center overflow-hidden">
+  <!-- Background video / image fallback -->
+  <div class="absolute inset-0 z-0">
+    <img
+      src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1800&q=85"
+      alt="Farm field"
+      class="w-full h-full object-cover object-center"
+    />
+    <div class="hero-overlay absolute inset-0"></div>
+  </div>
+
+  <!-- Floating leaf decorations -->
+  <div class="absolute top-16 right-12 text-6xl leaf-float opacity-30 select-none hidden md:block">🌿</div>
+  <div class="absolute bottom-24 right-1/4 text-4xl leaf-float opacity-20 select-none" style="animation-delay:2s">🍃</div>
+
+  <!-- Content -->
+  <div class="relative z-10 max-w-7xl mx-auto px-6 py-24 md:py-0">
+    <div class="max-w-2xl">
+      <div class="fade-up inline-flex items-center gap-2 bg-harvest-400/20 border border-harvest-400/40 text-harvest-300 text-sm font-medium px-4 py-1.5 rounded-full mb-6">
+        <span class="w-2 h-2 bg-harvest-400 rounded-full animate-pulse"></span>
+        Farm-to-Door Delivery
+      </div>
+      <h1 class="fade-up delay-1 font-display text-5xl md:text-7xl text-white leading-tight mb-6">
+        Fresh From<br/>
+        <span class="text-harvest-400">the Field</span>,<br/>
+        To Your Table.
+      </h1>
+      <p class="fade-up delay-2 text-forest-200 text-lg md:text-xl leading-relaxed mb-10 max-w-lg">
+        Discover certified organic produce, seeds, and agri-supplies sourced directly from trusted local farmers across the region.
+      </p>
+      <div class="fade-up delay-3 flex flex-col sm:flex-row gap-4">
+        <a href="#products" class="bg-harvest-400 hover:bg-harvest-300 text-forest-900 font-semibold px-8 py-4 rounded-full text-base transition-all hover:shadow-lg hover:shadow-harvest-400/30 text-center">
+          Shop Now →
+        </a>
+      </div>
+
+      <!-- Stats -->
+      <div class="fade-up delay-4 flex gap-8 mt-14 pt-8 border-t border-white/10">
+        <div>
+          <div class="font-display text-3xl text-harvest-400 font-bold">1,200+</div>
+          <div class="text-forest-300 text-sm mt-0.5">Products Listed</div>
+        </div>
+        <div class="w-px bg-white/10"></div>
+        <div>
+          <div class="font-display text-3xl text-harvest-400 font-bold">340+</div>
+          <div class="text-forest-300 text-sm mt-0.5">Local Farmers</div>
+        </div>
+        <div class="w-px bg-white/10"></div>
+        <div>
+          <div class="font-display text-3xl text-harvest-400 font-bold">98%</div>
+          <div class="text-forest-300 text-sm mt-0.5">Satisfaction Rate</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll cue -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/40 animate-bounce hidden md:block">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     MARQUEE STRIP
+════════════════════════════════════════════ -->
+<div class="bg-harvest-400 py-3 overflow-hidden">
+  <div class="marquee-inner flex whitespace-nowrap">
+    <span class="inline-block text-forest-900 font-semibold text-sm px-8">🌾 100% Organic &nbsp;•&nbsp; Free Delivery Over ₱500 &nbsp;•&nbsp; 🥕 Fresh Daily &nbsp;•&nbsp; Farmer-Direct Pricing &nbsp;•&nbsp; 🌻 Seasonal Specials &nbsp;•&nbsp; Certified Pesticide-Free &nbsp;•&nbsp; 🍅 Farm Guaranteed &nbsp;•&nbsp;</span>
+    <span class="inline-block text-forest-900 font-semibold text-sm px-8">🌾 100% Organic &nbsp;•&nbsp; Free Delivery Over ₱500 &nbsp;•&nbsp; 🥕 Fresh Daily &nbsp;•&nbsp; Farmer-Direct Pricing &nbsp;•&nbsp; 🌻 Seasonal Specials &nbsp;•&nbsp; Certified Pesticide-Free &nbsp;•&nbsp; 🍅 Farm Guaranteed &nbsp;•&nbsp;</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     CATEGORIES ROW
+════════════════════════════════════════════ -->
+<section class="max-w-7xl mx-auto px-6 py-14">
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+    <!-- Category Card -->
+    <a href="#" class="group flex flex-col items-center gap-3 bg-white border border-forest-100 rounded-2xl px-4 py-6 hover:border-forest-400 hover:shadow-lg hover:shadow-forest-200/50 transition-all">
+      <span class="text-4xl">🥦</span>
+      <span class="text-forest-700 text-sm font-medium group-hover:text-forest-600">Vegetables</span>
+    </a>
+    <a href="#" class="group flex flex-col items-center gap-3 bg-white border border-forest-100 rounded-2xl px-4 py-6 hover:border-forest-400 hover:shadow-lg hover:shadow-forest-200/50 transition-all">
+      <span class="text-4xl">🍓</span>
+      <span class="text-forest-700 text-sm font-medium group-hover:text-forest-600">Fruits</span>
+    </a>
+    <a href="#" class="group flex flex-col items-center gap-3 bg-white border border-forest-100 rounded-2xl px-4 py-6 hover:border-forest-400 hover:shadow-lg hover:shadow-forest-200/50 transition-all">
+      <span class="text-4xl">🌱</span>
+      <span class="text-forest-700 text-sm font-medium group-hover:text-forest-600">Seeds</span>
+    </a>
+    <a href="#" class="group flex flex-col items-center gap-3 bg-white border border-forest-100 rounded-2xl px-4 py-6 hover:border-forest-400 hover:shadow-lg hover:shadow-forest-200/50 transition-all">
+      <span class="text-4xl">🌾</span>
+      <span class="text-forest-700 text-sm font-medium group-hover:text-forest-600">Grains</span>
+    </a>
+    <a href="#" class="group flex flex-col items-center gap-3 bg-white border border-forest-100 rounded-2xl px-4 py-6 hover:border-forest-400 hover:shadow-lg hover:shadow-forest-200/50 transition-all">
+      <span class="text-4xl">🧴</span>
+      <span class="text-forest-700 text-sm font-medium group-hover:text-forest-600">Fertilizers</span>
+    </a>
+    <a href="#" class="group flex flex-col items-center gap-3 bg-white border border-forest-100 rounded-2xl px-4 py-6 hover:border-forest-400 hover:shadow-lg hover:shadow-forest-200/50 transition-all">
+      <span class="text-4xl">🛠️</span>
+      <span class="text-forest-700 text-sm font-medium group-hover:text-forest-600">Tools</span>
+    </a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     Featured PRODUCTS
+════════════════════════════════════════════ -->
+<section id="bestsellers" class="bg-forest-900 py-20">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+      <div>
+        <p class="text-harvest-400 text-sm font-semibold uppercase tracking-widest mb-2">Top Picks</p>
+        <h2 class="font-display text-4xl md:text-5xl text-white">Featured<br/>Products</h2>
+      </div>
+      <a href="#products" class="text-forest-300 hover:text-harvest-300 transition text-sm font-medium flex items-center gap-1 self-start md:self-auto">
+        View all products <span>→</span>
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="featuredGrid"> </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     PROMO BANNER
+
+<section class="max-w-7xl mx-auto px-6 py-14">
+  <div class="relative rounded-3xl overflow-hidden bg-forest-700">
+    <img src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=1200&q=80" alt="Farm" class="absolute inset-0 w-full h-full object-cover opacity-20"/>
+    <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 p-10 md:p-14">
+      <div>
+        <p class="text-harvest-300 text-sm font-semibold uppercase tracking-widest mb-2">Limited Time</p>
+        <h2 class="font-display text-3xl md:text-4xl text-white mb-3">Get 30% Off Your<br/>First Harvest Box</h2>
+        <p class="text-forest-200 text-sm">Use code <span class="bg-harvest-400 text-forest-900 font-bold px-2 py-0.5 rounded">HARVEST30</span> at checkout.</p>
+      </div>
+      <a href="#" class="bg-harvest-400 hover:bg-harvest-300 text-forest-900 font-bold px-10 py-4 rounded-full text-base transition-all shrink-0 hover:shadow-lg">
+        Claim Offer →
+      </a>
+    </div>
+  </div>
+</section>
+════════════════════════════════════════════ -->
+
+
+
+
+
+
+<!-- ═══════════════════════════════════════════
+     PRODUCT LISTING WITH FILTERS
+════════════════════════════════════════════ -->
+<section id="products" class="max-w-7xl mx-auto px-6 mt-6 pb-20">
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+    <div>
+      <p class="text-terra-500 text-sm font-semibold uppercase tracking-widest mb-2">All Products</p>
+      <h2 class="font-display text-4xl md:text-5xl text-forest-900">Fresh Marketplace</h2>
+    </div>
+    <p class="text-forest-500 text-sm" id="showingProducts" ></p>
+  </div>
+
+  <div class="flex flex-col lg:flex-row gap-8">
+    <!-- SIDEBAR FILTERS -->
+    <aside class="lg:w-64 shrink-0">
+      <div class="bg-white border border-forest-100 rounded-2xl p-6 sticky top-20">
+        <h3 class="font-semibold text-forest-900 mb-5 flex items-center gap-2">
+          <svg class="w-4 h-4 text-forest-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          Filters
+        </h3>
+
+        <!-- Category -->
+        <div class="mb-6">
+          <p class="text-xs font-semibold text-forest-500 uppercase tracking-wider mb-3">Category</p>
+          <div class="flex flex-wrap gap-2" id="productCategory">
+            <button class="filter-chip active text-xs border border-forest-200 px-3 py-1.5 rounded-full transition hover:border-forest-400">All</button>
+          </div>
+        </div>
+
+        <!-- Price Range -->
+        <div class="mb-6">
+          <p class="text-xs font-semibold text-forest-500 uppercase tracking-wider mb-3">Price Range</p>
+          <input type="range" min="0" max="2000" value="1200" class="w-full mb-2" id="priceRange" />
+          <div class="flex justify-between text-xs text-forest-500">
+            <span>₱0</span>
+            <span class="font-semibold text-forest-800" id="priceVal">₱1,200</span>
+            <span>₱2,000+</span>
+          </div>
+        </div>
+
+        <!-- Sort -->
+        <div class="mb-6">
+          <p class="text-xs font-semibold text-forest-500 uppercase tracking-wider mb-3">Sort By</p>
+          <select class="w-full border border-forest-200 rounded-xl px-3 py-2.5 text-sm text-forest-700 bg-white focus:outline-none focus:border-forest-400">
+            <option>Latest Products</option>
+            <option>Price: Low to High</option>
+            <option>Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+    </aside>
+
+
+
+
+
+    <!-- PRODUCT GRID -->
+    <div class="flex-1">
+      <div id='productGrid' class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     TRUST BADGES
+════════════════════════════════════════════ -->
+<section class="bg-harvest-50 border-y border-harvest-100 py-12">
+  <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
+    <div class="flex flex-col items-center text-center gap-3">
+      <div class="w-14 h-14 bg-forest-100 rounded-2xl flex items-center justify-center text-2xl">🚚</div>
+      <div>
+        <p class="font-semibold text-forest-800 text-sm">Free Delivery</p>
+        <p class="text-forest-500 text-xs">On orders over ₱500</p>
+      </div>
+    </div>
+    <div class="flex flex-col items-center text-center gap-3">
+      <div class="w-14 h-14 bg-forest-100 rounded-2xl flex items-center justify-center text-2xl">🌿</div>
+      <div>
+        <p class="font-semibold text-forest-800 text-sm">100% Organic</p>
+        <p class="text-forest-500 text-xs">Certified pesticide-free</p>
+      </div>
+    </div>
+    <div class="flex flex-col items-center text-center gap-3">
+      <div class="w-14 h-14 bg-forest-100 rounded-2xl flex items-center justify-center text-2xl">🛡️</div>
+      <div>
+        <p class="font-semibold text-forest-800 text-sm">Safe & Secure</p>
+        <p class="text-forest-500 text-xs">Encrypted payments</p>
+      </div>
+    </div>
+    <div class="flex flex-col items-center text-center gap-3">
+      <div class="w-14 h-14 bg-forest-100 rounded-2xl flex items-center justify-center text-2xl">↩️</div>
+      <div>
+        <p class="font-semibold text-forest-800 text-sm">Easy Returns</p>
+        <p class="text-forest-500 text-xs">7-day return policy</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="/js/main_app.js" defer ></script>
+<script src="/js/user_index_app.js" defer ></script>
+
+<%- include ('partials/user_bottom') %>

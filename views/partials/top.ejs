@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= pageTitle %></title>
+  <link rel="icon" href="/images/logo.png" type="image/png">
+  <link rel="stylesheet" href="/css/output.css">
+  <link rel="stylesheet" href="/css/admin_main.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script> 
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+  <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+</head>
+
+<body class="bg-forest-950 text-forest-100 min-h-screen flex overflow-x-hidden">
+
+  
+  <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true">
+    <div class="modal-box" id="modalBox">
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <div id="toast">
+    <span id="toast-msg"></span>
+  </div>
+
+
+
+
+  <aside id="sidebar" class="w-64 min-h-screen bg-forest-900/90 border-r border-forest-800/60 flex flex-col py-5 px-3 shrink-0 relative z-50 overflow-y-auto overflow-x-hidden">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-3 px-2 mb-8">
+      <div class="w-9 h-9 bg-harvest-400 rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-harvest-900/30">
+        <img src="/images/logo.png" />
+      </div>
+      <div class="sidebar-logo-text">
+        <span class="font-display text-lg text-white font-bold leading-none">MPSAC <span class="text-harvest-400">Shop</span></span>
+        <p class="text-forest-500 text-[10px] mt-0.5 font-medium uppercase tracking-widest">Admin Panel</p>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex flex-col gap-1 flex-1">
+      <p class="sidebar-group-label text-forest-600 text-[10px] font-bold uppercase tracking-widest px-2 mb-1">Main</p>
+
+      <a href="/a/dashboard" class="nav-item <%= linkActive === 'dashboard' ? 'active' : '' %>" >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span class="sidebar-label">Dashboard</span>
+      </a>
+
+      <a href="/a/products" class="nav-item <%= linkActive === 'products' ? 'active' : '' %>" >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="sidebar-label">Products</span>
+      </a>
+
+      <a href="/a/orders" class="nav-item <%= linkActive === 'order' ? 'active' : '' %>" >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+        <span class="sidebar-label">Orders</span>
+      </a>
+
+      <a href="/a/customers" class="nav-item <%= linkActive === 'customer' ? 'active' : '' %>" >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="sidebar-label">Customers</span>
+      </a>
+
+      <a href="/a/inventory" class="nav-item <%= linkActive === 'inventory' ? 'active' : '' %>" >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+        <span class="sidebar-label">Inventory</span>
+      </a>
+
+    </nav>
+  </aside>
+
+<!-- Mobile overlay -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-black/60 z-[199] hidden opacity-0" ></div>
+
+<!-- MAIN CONTENT-->
+<div id="mainContent" class="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+
+  <!-- ── TOP HEADER ── -->
+  <header class="sticky top-0 z-40 bg-forest-950/90 backdrop-blur-md border-b border-forest-800/50 px-4 md:px-6 h-16 flex items-center gap-4">
+    <!-- Hamburger (mobile) + collapse (desktop) -->
+    <button id="sidebarToggleBtn" class="w-9 h-9 rounded-xl bg-forest-800/60 hover:bg-forest-700/60 flex items-center justify-center transition text-forest-300 hover:text-harvest-300 shrink-0">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+
+
+    <!-- Search bar 
+    <div class="flex-1 max-w-xs hidden md:block">
+      <div class="relative">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-forest-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Search products, orders…" class="w-full bg-forest-800/60 border border-forest-700/40 rounded-xl pl-9 pr-4 py-2 text-sm text-forest-200 placeholder-forest-600 focus:outline-none focus:border-harvest-500/50 transition"/>
+      </div>
+    </div>
+    -->
+
+
+
+    <div class="ml-auto flex items-center gap-2.5">
+      <!-- Date -->
+      <span class="hidden lg:block text-forest-500 text-xs" id="currentDate"></span>
+
+      <!-- Notifications -->
+      <button class="relative w-9 h-9 rounded-xl bg-forest-800/60 hover:bg-forest-700/60 flex items-center justify-center transition text-forest-300 hover:text-harvest-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+
+      <!-- Avatar -->
+      <div class="w-9 h-9 rounded-xl bg-harvest-400 flex items-center justify-center text-forest-900 font-bold text-sm cursor-pointer hover:ring-2 hover:ring-harvest-400/50 transition">A</div>
+    
+      <a href='/a/logout' class="relative w-9 h-9 rounded-xl bg-red-800/60 hover:bg-red-700/60 flex items-center justify-center transition text-red-300 hover:text-red-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </a>
+    </div>
+  </header>
+  
+  <!-- ── PAGE BODY ── -->
+  <main class="flex-1 p-4 md:p-6 overflow-y-auto">
