@@ -7,7 +7,7 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const session = require('express-session');
 const app = express();
-app.set('trust proxy', 1);
+
 // Security
 app.use(
   helmet({
@@ -79,7 +79,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // View engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-
+app.set('trust proxy', 1);
 // Routes
 const webRoutes = require('./routes/web');
 app.use('/', webRoutes);
