@@ -7,7 +7,7 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const session = require('express-session');
 const app = express();
-
+app.set('trust proxy', 1);
 // Security
 app.use(
   helmet({
