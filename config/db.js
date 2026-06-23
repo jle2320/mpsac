@@ -8,4 +8,7 @@ const connection = mysql.createPool({
 });
 
 
+console.log(connection);
+console.log("Checccck");
+
 module.exports = connection.promise();
